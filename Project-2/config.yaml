@@ -1,0 +1,5 @@
+population_size: 100
+n_generations: 10
+crossover_rate: 0.2
+mutation_rate: 0.8
+initial_pop_function: StartTime # StartTime, Clustering

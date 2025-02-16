@@ -1,8 +1,9 @@
 use crate::bitstring::BitArray;
 use crate::config::{load_config, Config, PW, get_data};
 
-pub struct SGA {
+pub struct SGA
     pub population: Vec<(BitArray, u32)>,
+ DsD
     config: Config,
     data: Vec<PW>
 }

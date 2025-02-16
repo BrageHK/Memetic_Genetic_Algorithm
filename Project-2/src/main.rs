@@ -1,7 +1,11 @@
-mod io;
+extern crate core;
+
+mod genetic;
 mod structs;
+mod util;
+
+use genetic::genetic_algo;
 
 fn main() {
-    let inf = io::read_from_json("train/train_0.json").unwrap();
-    println!("{:?}", inf);
+    genetic_algo::start("train/train_0.json", "config.yaml");
 }
