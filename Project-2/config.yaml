@@ -1,5 +1,14 @@
+train_num: 0
 population_size: 100
 n_generations: 10
 crossover_rate: 0.2
-mutation_rate: 0.8
-initial_pop_function: StartTime # StartTime, Clustering
+mutation_loops: 4
+inter_swap_mutation_rate: 0.3
+cross_swap_mutation_rate: 0.05
+inter_insert_mutation_rate: 0.2
+cross_insert_mutation_rate: 0.08
+scramble_mutation_rate: 0.03
+scramble_len: 4
+inversion_mutation_rate: 0.06
+inversion_len: 4
+initial_pop_function: StartTime

@@ -11,12 +11,18 @@ pub(crate) fn start(train_path: &str, conf_path: &str) {
     let info = io::read_from_json(train_path).unwrap();
     let config = Config::new(conf_path);
 
-    println!("Initializing population!"),
+    println!("Initializing population!");
     let mut population: Vec<Nurse> = match config.initial_pop_function {
         InitialPopType::Clustering => clustering(&info),
         InitialPopType::StartTime => start_time(&info)
     };
     println!("Done initializing population!");
 
-    for
+    // Mutate
+    // Evaluate
+
+    for _ in 0..config.n_generations {
+
+    }
 }
+
