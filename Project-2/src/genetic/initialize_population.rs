@@ -1,4 +1,3 @@
-use core::panic::PanicInfo;
 use rand::prelude::IndexedRandom;
 use crate::structs::io::{Info, Patient};
 use crate::structs::nurse::Nurse;
@@ -61,8 +60,14 @@ pub fn clustering(info: &Info) -> Vec<Nurse> {
 }
 
 pub fn start_time(info: &Info) -> Vec<Nurse> {
+    let mut rng = rand::rng();
     let mut patients = info.patients.iter().clone().enumerate().collect::<Vec<(usize, &Patient)>>();
     patients.sort_by(|p1, p2| p1.1.start_time.partial_cmp(&p2.1.start_time).unwrap());
+
+    for _ in 0..6 {
+        let idx = rng.random_range(0..patients.len()-1);
+        patients.swap(idx, idx+1);
+    }
 
     //println!("Patients {:?}", &patients);
 

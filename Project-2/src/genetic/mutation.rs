@@ -1,21 +1,38 @@
 use rand::prelude::ThreadRng;
 use crate::structs::config::Config;
-use crate::structs::nurse::Nurse;
+use crate::structs::nurse::{Individual, Nurse};
 
 use rand::Rng;
 use rand::seq::SliceRandom;
 
-pub fn mutate(population: &mut Vec<Nurse>, config: &Config) {
+pub fn mutate_population(population: &mut Vec<Individual>, config: &Config) {
+    for individual in population {
+        mutate_nurse(&mut individual.nurses, config)
+    }
+}
+
+pub fn mutate_nurse(individual: &mut Vec<Nurse>, config: &Config) {
     let mut rng: ThreadRng= rand::rng();
 
     for _ in 0..config.mutation_loops {
         if rng.random_range(0.0..1.0) < config.inter_swap_mutation_rate  {
-            inter_swap_mutation(population, &mut rng);
+            inter_swap_mutation(individual, &mut rng);
         }
-        if rng.random_range(0.0..1.0) < config.inter_swap_mutation_rate  {
-
+        if rng.random_range(0.0..1.0) < config.cross_swap_mutation_rate  {
+            cross_swap_mutation(individual, &mut rng);
         }
-
+        if rng.random_range(0.0..1.0) < config.inter_insert_mutation_rate  {
+            inter_insert_mutation(individual, &mut rng);
+        }
+        if rng.random_range(0.0..1.0) < config.cross_insert_mutation_rate  {
+            cross_swap_mutation(individual, &mut rng);
+        }
+        if rng.random_range(0.0..1.0) < config.inversion_mutation_rate {
+            inversion_mutation(individual, &mut rng, &config)
+        }
+        if rng.random_range(0.0..1.0) < config.inversion_mutation_rate {
+            scramble_mutation(individual, &mut rng, &config)
+        }
     }
 }
 
@@ -40,31 +57,22 @@ fn inter_swap_mutation(nurses: &mut Vec<Nurse>, rng: &mut ThreadRng) {
 
 fn cross_swap_mutation(nurses: &mut Vec<Nurse>, rng: &mut ThreadRng) {
     let nurse_i = rng.random_range(0..nurses.len());
-    let nurse_len = nurses.len();
-    let mut nurse_1: &mut Nurse = nurses.get_mut(nurse_i).unwrap();
-
-    let mut nurse_j;
-    let mut nurse_2;
-    loop {
-        nurse_j = rng.random_range(0..nurse_len);
-        if nurse_i != nurse_j {
-            nurse_2 = nurses.get_mut(nurse_j).unwrap();
-            break;
+    let nurse_j = loop {
+        let j = rng.random_range(0..nurses.len());
+        if j != nurse_i {
+            break j;
         }
-    }
+    };
 
-    if !nurse_1.route.is_empty() && !nurse_2.route.is_empty() {
-        let nurse_i = rng.random_range(0..nurse_1.route.len());
-        let nurse_j = rng.random_range(0..nurse_2.route.len());
+    if !nurses[nurse_i].route.is_empty() && !nurses[nurse_j].route.is_empty() {
+        let route_i_index = rng.random_range(0..nurses[nurse_i].route.len());
+        let route_j_index = rng.random_range(0..nurses[nurse_j].route.len());
 
-        let patient_1 = nurse_1.route.get(nurse_i).unwrap();
-        let patient_2 = nurse_2.route.get(nurse_j).unwrap();
+        let patient_1 = nurses[nurse_i].route[route_i_index];
+        let patient_2 = nurses[nurse_j].route[route_j_index];
 
-        nurse_1.route.remove(nurse_i);
-        nurse_1.route.insert(nurse_i, *patient_1);
-
-        nurse_2.route.remove(nurse_j);
-        nurse_2.route.insert(nurse_j, *patient_2);
+        nurses[nurse_i].route[route_i_index] = patient_2;
+        nurses[nurse_j].route[route_j_index] = patient_1;
     }
 }
 
@@ -83,25 +91,21 @@ fn inter_insert_mutation(nurses: &mut Vec<Nurse>, rng: &mut ThreadRng) {
 
 fn cross_insert_mutation(nurses: &mut Vec<Nurse>, rng: &mut ThreadRng) {
     let nurse_i = rng.random_range(0..nurses.len());
-    let mut nurse_1: &mut Nurse = nurses.get_mut(nurse_i).unwrap();
-
     let mut nurse_j;
-    let mut nurse_2;
     loop {
         nurse_j = rng.random_range(0..nurses.len());
         if nurse_i != nurse_j {
-            nurse_2 = nurses.get_mut(nurse_j).unwrap();
             break;
         }
     }
 
-    if !nurse_1.route.is_empty() && !nurse_2.route.is_empty() {
-        let patient_i = rng.random_range(0..nurse_1.route.len());
-        let patient = nurse_1.route.get(patient_i).unwrap();
-        nurse_1.route.remove(patient_i);
+    if !nurses[nurse_i].route.is_empty() && !nurses[nurse_j].route.is_empty() {
+        let patient_i = rng.random_range(0..nurses[nurse_i].route.len());
+        let patient = nurses[nurse_i].route[patient_i];
+        nurses[nurse_i].route.remove(patient_i);
 
-        let patient_j = rng.random_range(0..nurse_2.route.len());
-        nurse_2.route.insert(patient_j, *patient);
+        let patient_j = rng.random_range(0..nurses[nurse_j].route.len());
+        nurses[nurse_j].route.insert(patient_j, patient);
     }
 }
 

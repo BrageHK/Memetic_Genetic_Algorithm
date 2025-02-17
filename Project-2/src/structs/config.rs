@@ -12,7 +12,7 @@ pub enum InitialPopType {
 
 #[derive(Debug, Deserialize)]
 pub struct Config  {
-    pub train_num: i32,
+    pub train_file_num: i32,
     pub population_size: i32,
     pub n_generations: i32,
     pub crossover_rate: f32,
@@ -25,7 +25,8 @@ pub struct Config  {
     pub scramble_len: i32,
     pub inversion_mutation_rate: f32,
     pub inversion_len: i32,
-    pub initial_pop_function: InitialPopType
+    pub initial_pop_function: InitialPopType,
+    pub fitness_punishment_factor: f32
 }
 
 impl Config {
