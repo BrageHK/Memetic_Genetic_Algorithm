@@ -1,6 +1,6 @@
 use serde::{Deserialize, Serialize};
 
-#[derive(Deserialize, Serialize, Debug, Clone)]
+#[derive(Deserialize, Serialize, Debug, Clone, Eq, Hash, PartialEq)]
 pub struct Nurse {
     pub capacity: i32,
     pub route: Vec<i32>

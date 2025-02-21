@@ -5,10 +5,10 @@ use crate::structs::nurse::{Individual, Nurse};
 use rand::Rng;
 use rand::seq::SliceRandom;
 
+use rayon::prelude::*;
+
 pub fn mutate_population(population: &mut Vec<Individual>, config: &Config) {
-    for individual in population {
-        mutate_nurse(&mut individual.nurses, config)
-    }
+    population.par_iter_mut().for_each(|individual| mutate_nurse(&mut individual.nurses, config));
 }
 
 pub fn mutate_nurse(individual: &mut Vec<Nurse>, config: &Config) {
@@ -111,21 +111,21 @@ fn cross_insert_mutation(nurses: &mut Vec<Nurse>, rng: &mut ThreadRng) {
 
 fn scramble_mutation(nurses: &mut Vec<Nurse>, rng: &mut ThreadRng, config: &Config) {
     let nurse_idx = rng.random_range(0..nurses.len());
-    let mut nurse: &mut Nurse = nurses.get_mut(nurse_idx).unwrap();
+    let nurse = &mut nurses[nurse_idx];
 
     if nurse.route.len() > config.scramble_len as usize {
-        let start_idx = rng.random_range(0..=nurse.route.len()-config.scramble_len as usize);
+        let start_idx = rng.random_range(0..nurse.route.len() - config.scramble_len as usize);
+        let end_idx = start_idx + config.scramble_len as usize;
 
-        let mut scrambled: Vec<i32> = Vec::new();
+        // Extract the segment to scramble
+        let mut scrambled: Vec<i32> = nurse.route[start_idx..end_idx].to_vec();
 
-        for route_idx in start_idx..start_idx+config.scramble_len as usize {
-            scrambled.push(*nurse.route.get(route_idx).unwrap());
-            nurse.route.remove(route_idx);
-        }
+        // Shuffle the segment
         scrambled.shuffle(rng);
 
-        for scrambled_patient in scrambled {
-            nurse.route.insert(start_idx, scrambled_patient);
+        // Replace the original segment with the scrambled one
+        for (i, &patient) in scrambled.iter().enumerate() {
+            nurse.route[start_idx + i] = patient;
         }
     }
 }

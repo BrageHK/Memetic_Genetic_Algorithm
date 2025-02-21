@@ -2,14 +2,25 @@ use crate::structs::config::Config;
 use crate::structs::io::{Info, Patient};
 use crate::structs::nurse::{Individual, Nurse};
 
-pub fn fitness_population(population: &mut Vec<Individual>, info: &Info, config: &Config) {
-    for individual in population {
-        let mut fitness_score: f32 = 0.0;
-        for nurse in &individual.nurses {
-            fitness_score += fitness_nurse(nurse, info, config);
+use std::collections::HashMap;
+use rayon::prelude::*;
+
+pub fn fitness_population(
+    population: &mut Vec<Individual>,
+    info: &Info,
+    config: &Config,
+    fitness_hashmap: &HashMap<Vec<Nurse>, f32>,
+) {
+    population.par_iter_mut().for_each(|individual| {
+        if let Some(&fitness_score) = fitness_hashmap.get(&individual.nurses) {
+            individual.fitness = fitness_score;
+        } else {
+            let fitness_score: f32 = individual.nurses.par_iter()
+                .map(|nurse| fitness_nurse(nurse, info, config))
+                .sum();
+            individual.fitness = fitness_score;
         }
-        individual.fitness = fitness_score;
-    }
+    });
 }
 
 // Fitness function that "accepts" infeasable solutions
@@ -89,4 +100,14 @@ pub fn feasable_fitness_nurse(nurse: &Nurse, info: &Info, config: &Config) -> f3
     fitness += info.travel_times[0][prev_p_idx];
 
     fitness
+}
+
+pub fn get_best_fitness_population(population: &Vec<Individual>) -> f32 {
+    let mut best_fitness: f32 = f32::INFINITY;
+    for individual in population {
+        if individual.fitness < best_fitness {
+            best_fitness = individual.fitness;
+        }
+    }
+    best_fitness
 }

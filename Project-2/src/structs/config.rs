@@ -15,6 +15,7 @@ pub struct Config  {
     pub train_file_num: i32,
     pub population_size: i32,
     pub n_generations: i32,
+    pub n_elitism: i32,
     pub crossover_rate: f32,
     pub mutation_loops: i32,
     pub inter_swap_mutation_rate: f32,
