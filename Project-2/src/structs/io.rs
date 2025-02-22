@@ -7,6 +7,7 @@ use std::error::Error;
 use std::io::BufReader;
 use std::fs::File;
 use std::collections::HashMap;
+use crate::structs::config::Config;
 
 #[derive(Deserialize, Serialize, Debug)]
 pub struct Info {
@@ -42,12 +43,38 @@ fn patients_to_vec<'de, D>(deserializer: D) -> Result<Vec<Patient>, D::Error>
 where
     D: Deserializer<'de>,
 {
+    use serde::de::Error;
+
     let patients_map: HashMap<String, Patient> = HashMap::deserialize(deserializer)?;
-    Ok(patients_map.into_values().collect())
+
+    let mut patients_vec: Vec<(usize, Patient)> = patients_map
+        .into_iter()
+        .map(|(key, patient)| {
+            key.parse::<usize>()
+                .map(|num| (num - 1, patient)) // Convert key to zero-based index
+                .map_err(|_| D::Error::custom(format!("Invalid patient key: {}", key)))
+        })
+        .collect::<Result<Vec<_>, D::Error>>()?;
+
+    // Sort by the parsed index
+    patients_vec.sort_by_key(|&(index, _)| index);
+
+    // Ensure the indices match expected values
+    for (expected, (actual, _)) in patients_vec.iter().enumerate() {
+        if *actual != expected {
+            return Err(D::Error::custom(format!(
+                "Patient keys are not sequential. Expected {}, got {}",
+                expected + 1,
+                actual + 1
+            )));
+        }
+    }
+
+    Ok(patients_vec.into_iter().map(|(_, patient)| patient).collect())
 }
 
-pub fn read_from_json(path: &str) -> Result<Info, Box<dyn Error>>{
-    let f = File::open(path)?;
+pub fn read_from_json(config: &Config) -> Result<Info, Box<dyn Error>>{
+    let f = File::open("train/train_".to_string() + &*config.train_file_num.to_string() + ".json")?;
     let reader = BufReader::new(f);
     let info = from_reader(reader)?;
     Ok(info)

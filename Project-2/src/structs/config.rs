@@ -16,6 +16,7 @@ pub struct Config  {
     pub population_size: i32,
     pub n_generations: i32,
     pub n_elitism: i32,
+    pub n_stagnations: i32,
     pub crossover_rate: f32,
     pub mutation_loops: i32,
     pub inter_swap_mutation_rate: f32,

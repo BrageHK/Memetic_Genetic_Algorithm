@@ -1,8 +1,10 @@
 use rand::prelude::IndexedRandom;
 use crate::structs::io::{Info, Patient};
-use crate::structs::nurse::Nurse;
+use crate::structs::nurse::{Individual, Nurse};
 
 use rand::Rng;
+use crate::genetic::evaluate::is_feasible_fitness_nurse;
+use crate::structs::config::Config;
 use crate::util::plot::plot_points;
 
 #[derive(Debug)]
@@ -63,8 +65,10 @@ pub fn start_time(info: &Info) -> Vec<Nurse> {
     let mut rng = rand::rng();
     let mut patients = info.patients.iter().clone().enumerate().collect::<Vec<(usize, &Patient)>>();
     patients.sort_by(|p1, p2| p1.1.start_time.partial_cmp(&p2.1.start_time).unwrap());
+    println!("Patient_first_start_time: {:?}", &patients[0].1.start_time);
+    println!("Patient_last_start_time: {:?}", &patients[patients.len() - 1].1.start_time);
 
-    for _ in 0..6 {
+    for _ in 0..0 {
         let idx = rng.random_range(0..patients.len()-1);
         patients.swap(idx, idx+1);
     }
@@ -78,11 +82,47 @@ pub fn start_time(info: &Info) -> Vec<Nurse> {
         nurses[nurse_idx].route.push(patient_idx as i32);
         nurses[nurse_idx].capacity += p.demand as i32;
         if nurses[nurse_idx].capacity > info.capacity_nurse as i32 {
-            println!("Too big rip")
+            panic!("Too big rip");
         }
     }
 
-    //println!("{:?}", &nurses);
-
     nurses
+}
+
+pub fn feasible_population_init(info: &Info, config: &Config) -> Vec<Individual> {
+    let mut population = Vec::new();
+    for _ in 0..config.population_size {
+        population.push(feasible_init_individual(&info, &config));
+    }
+    population
+}
+
+pub(crate) fn feasible_init_individual(info: &Info, config: &Config) -> Individual {
+    let mut rng = rand::rng();
+    let patients = info.patients
+        .iter()
+        .clone()
+        .enumerate()
+        .collect::<Vec<(usize, &Patient)>>();
+    let mut nurses: Vec<Nurse> = vec![Nurse::new(); info.nbr_nurses as usize];
+
+    for (patient_idx, _patient) in &patients {
+        let mut n = 0;
+        'outer: loop {
+            let nurse_idx = rng.random_range(0..nurses.len());
+            let route_idx =  if !nurses[nurse_idx].route.is_empty() {rng.random_range(0..nurses[nurse_idx].route.len())} else { 0 };
+            nurses[nurse_idx].route.insert(route_idx, *patient_idx as i32);
+
+            if is_feasible_fitness_nurse(&nurses[nurse_idx], &info) {
+                break 'outer;
+            }
+            nurses[nurse_idx].route.remove(route_idx);
+
+            n += 1;
+            if n > 8050 {
+                panic!("Bruh: {:?}, \ninfo: {:?}", &nurses, _patient);
+            }
+        }
+    }
+    Individual{nurses, fitness: -9999.}
 }
