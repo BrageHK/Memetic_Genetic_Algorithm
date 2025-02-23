@@ -6,8 +6,12 @@ use std::io::Read;
 
 #[derive(Deserialize, Serialize, Debug)]
 pub enum InitialPopType {
-    Clustering,
-    StartTime
+    Feasible,
+}
+
+#[derive(Debug, Deserialize)]
+pub enum ParentSelectionFN {
+    LinearRanking,
 }
 
 #[derive(Debug, Deserialize)]
@@ -19,16 +23,11 @@ pub struct Config  {
     pub n_stagnations: i32,
     pub crossover_rate: f32,
     pub mutation_loops: i32,
-    pub inter_swap_mutation_rate: f32,
-    pub cross_swap_mutation_rate: f32,
-    pub inter_insert_mutation_rate: f32,
-    pub cross_insert_mutation_rate: f32,
-    pub scramble_mutation_rate: f32,
-    pub scramble_len: i32,
-    pub inversion_mutation_rate: f32,
-    pub inversion_len: i32,
-    pub initial_pop_function: InitialPopType,
-    pub fitness_punishment_factor: f32
+    pub heuristic_cluster_mutation_rate: f32,
+    pub init_population_fn: InitialPopType,
+    pub parent_selection_fn: ParentSelectionFN,
+    pub fitness_punishment_factor: f32,
+    pub s: f32,
 }
 
 impl Config {

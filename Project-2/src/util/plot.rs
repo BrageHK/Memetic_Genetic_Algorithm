@@ -1,6 +1,6 @@
 use plotters::prelude::*;
-use crate::genetic::initialize_population::Point;
 
+/*
 pub fn plot_points(patients: &Vec<Point>) {
     let root = BitMapBackend::new("example.png", (1000, 1000))
             .into_drawing_area();
@@ -21,3 +21,4 @@ pub fn plot_points(patients: &Vec<Point>) {
     }
     root.present().unwrap();
 }
+ */
