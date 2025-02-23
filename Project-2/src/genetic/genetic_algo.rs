@@ -31,6 +31,12 @@ pub(crate) fn start(conf_path: &str) {
     for i in 0..config.n_generations {
         population.sort_by(|p1, p2| p2.fitness.total_cmp(&p1.fitness));
 
+
+        if i % 10 == 0 { println!("nGenerations: {} Best fitness: {} Execution_time {:?}", i, &population.last().unwrap().fitness, &start.elapsed()); }
+        if i % 100 == 0 && population.last().unwrap().fitness < 877. { save_individual(&population) }
+
+        let mut elitism_members = population[population.len()-config.n_elitism as usize..].to_vec();
+        population.drain(0..config.n_elitism as usize);
         // Stagnation
         let curr_fitness = get_best_fitness_population(&population);
         if best_fitness > curr_fitness {
@@ -46,12 +52,6 @@ pub(crate) fn start(conf_path: &str) {
         } else {
             stagnation_counter += 1;
         }
-
-        if i % 10 == 0 { println!("nGenerations: {} Best fitness: {} Execution_time {:?}", i, &population.last().unwrap().fitness, &start.elapsed()); }
-        if i % 100 == 0 && population.last().unwrap().fitness < 877. { save_individual(&population) }
-
-        let mut elitism_members = population[population.len()-config.n_elitism as usize..].to_vec();
-        population.drain(0..config.n_elitism as usize);
 
         let parent_indices: Vec<usize> = parent_selection(&mut population, &config);
 
@@ -73,6 +73,5 @@ fn scramble_population(population: &mut Vec<Individual>, info: &Info, config: &C
     println!("Stagnated! Scrambling!");
     let mut new_population = init_population(&info, &config);
     new_population.drain(0..config.n_elitism as usize);
-    population.drain(0..population.len()-config.n_elitism as usize);
-    population.extend(new_population);
+    *population = new_population;
 }
