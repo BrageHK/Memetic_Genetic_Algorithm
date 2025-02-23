@@ -1,34 +1,50 @@
+use std::io::Write;
 use crate::structs::config::Config;
 use crate::structs::io::{Info, Patient};
 use crate::structs::nurse::{Individual, Nurse};
 
 use std::collections::HashMap;
+use std::io;
+use std::sync::Mutex;
 use ordered_float::OrderedFloat;
 use rayon::prelude::*;
 
-pub fn fitness_population(
-    population: &mut Vec<Individual>,
+pub fn fitness_population<'a>(
+    population: &'a mut Vec<Individual>,
     info: &Info,
     config: &Config,
-    fitness_hashmap: &HashMap<Vec<Nurse>, f32>,
-    generation_idx: i32,
+    fitness_hashmap: &mut HashMap<Vec<Nurse>, f32>,
 ) {
-    population.par_iter_mut().for_each(|individual| {
-        if let Some(&fitness_score) = fitness_hashmap.get(&individual.nurses) {
-            individual.fitness = fitness_score;
-        } else {
-            let fitness_score: f32 = individual.nurses.par_iter()
-                .map(|nurse| fitness_nurse(nurse, info, config))
-                .sum();
-            if fitness_score <= 10. {
-                panic!("Hello");
+    // Compute fitness scores in parallel
+    let new_fitness_scores: Vec<(Vec<Nurse>, f32)> = population.par_iter()
+        .filter_map(|individual| {
+            if let Some(&score) = fitness_hashmap.get(&individual.nurses) {
+                Some((individual.nurses.clone(), score))
+            } else {
+                let score: f32 = individual.nurses.par_iter()
+                    .map(|nurse| fitness_nurse(nurse, info, config))
+                    .sum();
+                if score <= 10. {
+                    panic!("Hello");
+                }
+                Some((individual.nurses.clone(), score))
             }
-            individual.fitness = fitness_score;
+        })
+        .collect();
+
+    // Update the shared HashMap
+    for (nurses, score) in new_fitness_scores {
+        fitness_hashmap.insert(nurses, score);
+    }
+
+    // Assign fitness scores to individuals
+    for individual in population.iter_mut() {
+        if let Some(&score) = fitness_hashmap.get(&individual.nurses) {
+            individual.fitness = score;
         }
-    });
+    }
 }
 
-// Fitness function that "accepts" infeasable solutions
 pub fn fitness_nurse(nurse: &Nurse, info: &Info, config: &Config) -> f32 {
     if nurse.route.is_empty() {
         return 0.0

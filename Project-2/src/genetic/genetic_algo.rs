@@ -1,10 +1,11 @@
 use std::collections::HashMap;
-use ordered_float::OrderedFloat;
+use std::time::Instant;
 use crate::genetic::evaluate::{fitness_population, get_best_fitness_population, is_feasible_fitness_individual, get_best_solution_population};
 use crate::genetic::initialize_population::init_population;
 use crate::genetic::mutation::mutate_population;
 use crate::genetic::parent_selection::parent_selection;
 use crate::genetic::crossover::population_crossover;
+use crate::genetic::survivor_selection::survivor_selection;
 use crate::structs::io;
 use crate::structs::config::Config;
 use crate::structs::nurse::Nurse;
@@ -18,33 +19,41 @@ pub(crate) fn start(conf_path: &str) {
 
     let mut fitness_hashmap: HashMap<Vec<Nurse>, f32> = HashMap::new();
 
-    fitness_population(&mut population, &info, &config, &mut fitness_hashmap, 0);
+    fitness_population(&mut population, &info, &config, &mut fitness_hashmap);
 
     let mut stagnation_counter: i32 = 0;
     let mut best_fitness: f32 = f32::INFINITY;
     let mut best_solution: Vec<Vec<i32>> = Vec::new();
     let mut local_fitness_optima: f32 = f32::INFINITY;
 
-    for i in 0..config.n_generations {
-        if i % 100 == 0 { println!("nGenerations: {} Curr fitness: {} Best fitness: {} Legal: {:?}", i, get_best_fitness_population(&population), best_fitness, is_feasible_fitness_individual(&population.iter().min_by_key(|i| OrderedFloat(i.fitness)).unwrap(), &info)); }
-        if i % 1000 == 0 && get_best_fitness_population(&population) < 877. { save_individual(&population) }
+    let start = Instant::now();
 
-        // Sort by fitness (best are last)
+    for i in 0..config.n_generations {
+
         population.sort_by(|p1, p2| p2.fitness.total_cmp(&p1.fitness));
-        // Get elitism individuals
+
+        if i % 10 == 0 { println!("nGenerations: {} Best fitness: {} Execution_time {:?}", i, &population.last().unwrap().fitness, &start.elapsed()); }
+        if i % 100 == 0 && population.last().unwrap().fitness < 877. { save_individual(&population) }
+
         let mut elitism_members = population[population.len()-config.n_elitism as usize..].to_vec();
-        // Parent selection
-        let parent_indices: Vec<usize> = parent_selection(&mut population, &info, &config);
-        // Crossover
-        let mut children_population = population_crossover(&mut population, &parent_indices, &info, &config, i, stagnation_counter);
-        // Mutate children
+        population.drain(0..config.n_elitism as usize);
+
+        let parent_indices: Vec<usize> = parent_selection(&mut population, &config);
+
+        let mut children_population = population_crossover(&mut population, &parent_indices, &info, &config);
+
         mutate_population(&mut children_population, &config, &info);
-        // Evaluate population
-        fitness_population(&mut children_population, &info, &config, &mut fitness_hashmap, i);
-        // Survivor selection
+
+        fitness_population(&mut children_population, &info, &config, &mut fitness_hashmap);
+
+        let start_survivor = Instant::now();
+        survivor_selection(&mut population, &children_population, &config);
+        println!("Survivor time: {:?}", &start_survivor.elapsed());
+
         population.append(&mut elitism_members);
 
         // Stagnation
+        /*
         let best_fitness_now = get_best_fitness_population(&population);
         if best_fitness_now < local_fitness_optima || stagnation_counter > (config.n_stagnations) {
             stagnation_counter = 0;
@@ -56,5 +65,7 @@ pub(crate) fn start(conf_path: &str) {
         } else {
             stagnation_counter += 1;
         }
+
+         */
     }
 }

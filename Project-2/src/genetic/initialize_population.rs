@@ -13,7 +13,7 @@ pub fn init_population(info: &Info, config: &Config) -> Vec<Individual> {
         InitialPopType::Feasible => feasible_init_individual
     };
     let mut population = Vec::new();
-    for _ in 0..=config.population_size {
+    for _ in 0..config.population_size {
         population.push(init_fn(&info, &config))
     }
     population

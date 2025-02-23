@@ -3,7 +3,6 @@ use crate::structs::config::Config;
 use crate::structs::nurse::{Individual, Nurse};
 
 use rand::Rng;
-use rand::seq::SliceRandom;
 
 use rayon::prelude::*;
 use crate::genetic::evaluate::fitness_nurse;

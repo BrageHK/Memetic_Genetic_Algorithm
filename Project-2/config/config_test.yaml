@@ -1,10 +1,27 @@
+# File
 train_file_num: 9
-population_size: 100
+
+# Hyperparameters
+population_size: 350
 n_generations: 40000
-n_elitism: 1
-n_stagnations: 30000
+n_elitism: 5
+n_stagnations: 3000
 crossover_rate: 0.7
-mutation_loops: 2
+mutation_loops: 1
 heuristic_cluster_mutation_rate: 0.3
-initial_pop_function: StartTime
-fitness_punishment_factor: 0.5
+fitness_punishment_factor: 3.5
+
+# Parent Selection
+
+# Linear Ranking
+s: 1.3
+
+# Crowding
+# 0 for deterministic, 1 for probabilistic
+scaling_factor: 0.5
+
+# Functions
+init_population_fn: Feasible
+parent_selection_fn: LinearRanking
+crossover_fn: Visma
+survivor_selection_fn: Crowding

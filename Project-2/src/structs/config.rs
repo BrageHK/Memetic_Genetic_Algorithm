@@ -14,6 +14,16 @@ pub enum ParentSelectionFN {
     LinearRanking,
 }
 
+#[derive(Deserialize, Serialize, Debug)]
+pub enum CrossoverFN {
+    Visma,
+}
+
+#[derive(Deserialize, Serialize, Debug)]
+pub enum SurvivorSelectionFN {
+    Crowding,
+}
+
 #[derive(Debug, Deserialize)]
 pub struct Config  {
     pub train_file_num: i32,
@@ -26,6 +36,10 @@ pub struct Config  {
     pub heuristic_cluster_mutation_rate: f32,
     pub init_population_fn: InitialPopType,
     pub parent_selection_fn: ParentSelectionFN,
+    pub crossover_fn: CrossoverFN,
+    pub survivor_selection_fn: SurvivorSelectionFN,
+    pub scaling_factor: f32,
+    pub n_parents_scaling: f32,
     pub fitness_punishment_factor: f32,
     pub s: f32,
 }

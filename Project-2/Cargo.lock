@@ -6,6 +6,7 @@ version = 4
 name = "Project-2"
 version = "0.1.0"
 dependencies = [
+ "cpu-time",
  "ordered-float",
  "plotters",
  "rand",
@@ -157,6 +158,16 @@ dependencies = [
  "core-graphics",
  "foreign-types",
  "libc",
+]
+
+[[package]]
+name = "cpu-time"
+version = "1.0.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "e9e393a7668fe1fad3075085b86c781883000b4ede868f43627b34a87c8b7ded"
+dependencies = [
+ "libc",
+ "winapi",
 ]
 
 [[package]]

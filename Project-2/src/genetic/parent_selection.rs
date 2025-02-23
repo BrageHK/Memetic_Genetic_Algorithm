@@ -1,5 +1,4 @@
 use crate::structs::config::{Config, ParentSelectionFN};
-use crate::structs::io::Info;
 use crate::structs::nurse::Individual;
 
 use rand::rng;
@@ -15,7 +14,12 @@ pub fn parent_selection(population: &mut Vec<Individual>, config: &Config) -> Ve
         ParentSelectionFN::LinearRanking => linear_ranking
     };
 
-    parent_fn(population, &config)
+    let mut parent_indices = parent_fn(population, &config);
+    if (parent_indices.len() & 1) != 0 {
+        parent_indices.remove(0);
+    }
+
+    parent_indices
 }
 
 fn linear_rank_probability(mu: usize, s: f32, i: usize) -> f32 {
@@ -27,7 +31,7 @@ fn linear_rank_probability(mu: usize, s: f32, i: usize) -> f32 {
 pub fn linear_ranking(population: &Vec<Individual>, config: &Config) -> Vec<usize> {
     let mu = population.len();
     let mut rng: ThreadRng = rng();
-    let n_parents = (population.len() - config.n_elitism as usize) * 3;
+    let n_parents = ((population.len() - config.n_elitism as usize) as f32 * config.n_parents_scaling) as usize;
 
     let probabilities: Vec<f32> = population
         .iter()

@@ -6,11 +6,11 @@ use crate::structs::io;
 use crate::structs::io::Info;
 use crate::structs::nurse::Individual;
 
-fn get_initial() -> (Info, Config, Individual) {
+pub fn get_initial() -> (Info, Config, Vec<Individual>) {
     let config = Config::new("config/config_test.yaml");
     let info = io::read_from_json(&config).unwrap();
-    let individual = init_population(&info, &config).last().unwrap().clone();
-    (info, config, individual)
+    let population = init_population(&info, &config);
+    (info, config, population)
 }
 
 fn legal(individual: &Individual) {
@@ -26,7 +26,8 @@ fn legal(individual: &Individual) {
 
 #[test]
 fn test_heuristic_cluster_mutation() {
-    let (info, config, mut individual) = get_initial();
+    let (info, config, population) = get_initial();
+    let mut individual = population[0].clone();
     let mut rng = rand::rng();
 
     let individual_before = individual.clone();
