@@ -8,7 +8,8 @@ use crate::genetic::crossover::population_crossover;
 use crate::genetic::survivor_selection::survivor_selection;
 use crate::structs::io;
 use crate::structs::config::Config;
-use crate::structs::nurse::Nurse;
+use crate::structs::io::Info;
+use crate::structs::nurse::{Individual, Nurse};
 use crate::util::save_individual::save_individual;
 
 pub(crate) fn start(conf_path: &str) {
@@ -24,13 +25,27 @@ pub(crate) fn start(conf_path: &str) {
     let mut stagnation_counter: i32 = 0;
     let mut best_fitness: f32 = f32::INFINITY;
     let mut best_solution: Vec<Vec<i32>> = Vec::new();
-    let mut local_fitness_optima: f32 = f32::INFINITY;
 
     let start = Instant::now();
 
     for i in 0..config.n_generations {
-
         population.sort_by(|p1, p2| p2.fitness.total_cmp(&p1.fitness));
+
+        // Stagnation
+        let curr_fitness = get_best_fitness_population(&population);
+        if best_fitness > curr_fitness {
+            stagnation_counter = 0;
+            best_fitness = curr_fitness;
+            if curr_fitness < 877. {
+                best_solution = get_best_solution_population(&population);
+            }
+        } else if stagnation_counter > (config.n_stagnations) {
+            stagnation_counter = 0;
+            scramble_population(&mut population, &info, &config);
+            fitness_population(&mut population, &info, &config, &mut fitness_hashmap);
+        } else {
+            stagnation_counter += 1;
+        }
 
         if i % 10 == 0 { println!("nGenerations: {} Best fitness: {} Execution_time {:?}", i, &population.last().unwrap().fitness, &start.elapsed()); }
         if i % 100 == 0 && population.last().unwrap().fitness < 877. { save_individual(&population) }
@@ -46,26 +61,18 @@ pub(crate) fn start(conf_path: &str) {
 
         fitness_population(&mut children_population, &info, &config, &mut fitness_hashmap);
 
-        let start_survivor = Instant::now();
+        //let start_survivor = Instant::now();
         survivor_selection(&mut population, &children_population, &config);
-        println!("Survivor time: {:?}", &start_survivor.elapsed());
+        //println!("Survivor time: {:?}", &start_survivor.elapsed());
 
         population.append(&mut elitism_members);
-
-        // Stagnation
-        /*
-        let best_fitness_now = get_best_fitness_population(&population);
-        if best_fitness_now < local_fitness_optima || stagnation_counter > (config.n_stagnations) {
-            stagnation_counter = 0;
-            if best_fitness_now < best_fitness {
-                best_solution = get_best_solution_population(&population);
-                best_fitness = get_best_fitness_population(&population);
-            }
-            local_fitness_optima = best_fitness_now;
-        } else {
-            stagnation_counter += 1;
-        }
-
-         */
     }
+}
+
+fn scramble_population(population: &mut Vec<Individual>, info: &Info, config: &Config) {
+    println!("Stagnated! Scrambling!");
+    let mut new_population = init_population(&info, &config);
+    new_population.drain(0..config.n_elitism as usize);
+    population.drain(0..population.len()-config.n_elitism as usize);
+    population.extend(new_population);
 }
