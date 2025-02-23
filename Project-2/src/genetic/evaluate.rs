@@ -18,7 +18,7 @@ pub fn fitness_population(
             individual.fitness = fitness_score;
         } else {
             let fitness_score: f32 = individual.nurses.par_iter()
-                .map(|nurse| fitness_nurse(nurse, info, config, generation_idx))
+                .map(|nurse| fitness_nurse(nurse, info, config))
                 .sum();
             if fitness_score <= 10. {
                 panic!("Hello");
@@ -29,7 +29,7 @@ pub fn fitness_population(
 }
 
 // Fitness function that "accepts" infeasable solutions
-pub fn fitness_nurse(nurse: &Nurse, info: &Info, config: &Config, generation_idx: i32) -> f32 {
+pub fn fitness_nurse(nurse: &Nurse, info: &Info, config: &Config) -> f32 {
     if nurse.route.is_empty() {
         return 0.0
     }
@@ -53,7 +53,7 @@ pub fn fitness_nurse(nurse: &Nurse, info: &Info, config: &Config, generation_idx
         time_used += patient.care_time as f32;
         if (patient.end_time as f32) < time_used {
             // Pasienten har ikke tid til å bli behandlet -> punishment
-            fitness += travel_time * config.fitness_punishment_factor + (generation_idx as f32/10.);
+            fitness += travel_time * config.fitness_punishment_factor;
         }
         curr_demand += patient.demand;
         prev_p_idx = p as usize;

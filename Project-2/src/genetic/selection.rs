@@ -77,9 +77,9 @@ fn repair_nurse(
         // Check all nurses for the best insertion point
         for (n_idx, nurse) in to_repair.nurses.iter_mut().enumerate() {
             for insertion_idx in 0..=nurse.route.len() {
-                let old_fitness = fitness_nurse(nurse, &info, &config, generation_idx);
+                let old_fitness = fitness_nurse(nurse, &info, &config);
                 nurse.route.insert(insertion_idx, patient.0 as i32);
-                let new_fitness = fitness_nurse(nurse, &info, &config, generation_idx);
+                let new_fitness = fitness_nurse(nurse, &info, &config);
                 if new_fitness - old_fitness < lowest_fitness_change {
                     lowest_fitness_change = new_fitness - old_fitness;
                     best_nurse_idx = n_idx;
@@ -142,8 +142,7 @@ pub fn population_crossover(
 
     let mut new_population: Vec<Individual> = Vec::new();
 
-    let len = if stagnation_counter < 50 { (population.len() - config.n_elitism as usize)/2 }
-    else {(population.len())/2};
+    let len = { (population.len() - config.n_elitism as usize)/2 };
 
     for _ in 0..len {
         let idx_parent_1 = dist.sample(&mut rng);

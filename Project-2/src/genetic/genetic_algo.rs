@@ -62,11 +62,7 @@ pub(crate) fn start(conf_path: &str) {
             println!("{:?}", &individual);
             println!("{:?}", &best_solution);
         }
-        let mut elitism_members: Vec<Individual> = if stagnation_counter < config.n_stagnations {
-            population[population.len()-config.n_elitism as usize..].to_vec()
-        } else {
-            Vec::new()
-        };
+        let mut elitism_members = population[population.len()-config.n_elitism as usize..].to_vec();
 
         let new_population = population_crossover(&mut population, &info, &config, i, stagnation_counter);
 
@@ -74,6 +70,7 @@ pub(crate) fn start(conf_path: &str) {
 
         population.append(&mut elitism_members);
 
+        //TODO: fix mutation
         //mutate_population(&mut population, &config);
 
         fitness_population(&mut population, &info, &config, &mut fitness_hashmap, i);
@@ -81,7 +78,6 @@ pub(crate) fn start(conf_path: &str) {
         // Stagnation
         let best_fitness_now = get_best_fitness_population(&population);
         if best_fitness_now < local_fitness_optima || stagnation_counter > (config.n_stagnations) {
-            //println!("Reset stagnation_counter!");
             stagnation_counter = 0;
             if best_fitness_now < best_fitness {
                 best_solution = get_best_solution_population(&population);
