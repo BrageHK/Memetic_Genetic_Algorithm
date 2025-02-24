@@ -20,7 +20,7 @@ pub fn mutate_nurse(individual: &mut Vec<Nurse>, info: &Info, config: &Config) {
             heuristic_cluster_mutation(individual, &mut rng, &info, &config);
         }
         if rng.random_range(0.0..1.0) < 0.5 {
-            swap_mutation(individual, &mut rng, &info, &config);
+            heuristic_swap_mutation(individual, &mut rng, &info, &config);
         }
     }
 }
