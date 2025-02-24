@@ -5,17 +5,17 @@ train_file_num: 9
 population_size: 200
 n_generations: 100000
 n_elitism: 1
-n_stagnations: 350
+n_stagnations: 450
 crossover_rate: 0.85
 mutation_loops: 2
 heuristic_cluster_mutation_rate: 0.8
 fitness_punishment_factor: 3.3
 
 # Parent Selection
-n_parents_scaling: 1.
+n_parents_scaling: 1.2
 
 # Linear Ranking
-s: 1.5
+s: 1.4
 
 # Crowding
 # 0 for deterministic, 1 for probabilistic
