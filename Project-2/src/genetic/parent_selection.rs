@@ -22,7 +22,7 @@ pub fn parent_selection(population: &mut Vec<Individual>, config: &Config) -> Ve
     parent_indices
 }
 
-fn linear_rank_probability(mu: usize, s: f32, i: usize) -> f32 {
+pub fn linear_rank_probability(mu: usize, s: f32, i: usize) -> f32 {
     ((2. - s)/mu as f32) + ((2 * i) as f32 * (s - 1.)) / (mu * (mu - 1)) as f32
 }
 

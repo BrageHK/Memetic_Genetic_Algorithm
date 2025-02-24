@@ -1,11 +1,8 @@
-use std::io::Write;
 use crate::structs::config::Config;
 use crate::structs::io::{Info, Patient};
 use crate::structs::nurse::{Individual, Nurse};
 
 use std::collections::HashMap;
-use std::io;
-use std::sync::Mutex;
 use ordered_float::OrderedFloat;
 use rayon::prelude::*;
 
@@ -16,7 +13,8 @@ pub fn fitness_population<'a>(
     fitness_hashmap: &mut HashMap<Vec<Nurse>, f32>,
 ) {
     // Compute fitness scores in parallel
-    let new_fitness_scores: Vec<(Vec<Nurse>, f32)> = population.par_iter()
+    let new_fitness_scores: Vec<(Vec<Nurse>, f32)> = population
+        .par_iter()
         .filter_map(|individual| {
             if let Some(&score) = fitness_hashmap.get(&individual.nurses) {
                 Some((individual.nurses.clone(), score))
@@ -24,9 +22,6 @@ pub fn fitness_population<'a>(
                 let score: f32 = individual.nurses.par_iter()
                     .map(|nurse| fitness_nurse(nurse, info, config))
                     .sum();
-                if score <= 10. {
-                    panic!("Hello");
-                }
                 Some((individual.nurses.clone(), score))
             }
         })

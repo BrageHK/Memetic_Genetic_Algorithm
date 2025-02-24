@@ -38,6 +38,7 @@ pub struct Config  {
     pub heuristic_cluster_mutation_rate: f32,
     pub random_swap_mutation_rate: f32,
     pub heuristic_swap_mutation_rate: f32,
+    pub heuristic_random_swap_mutation_rate: f32,
 
     pub init_population_fn: InitialPopType,
     pub parent_selection_fn: ParentSelectionFN,

@@ -23,7 +23,6 @@ fn draw_arrow(
     let right_x = x2 as f64 - arrowhead_length * (angle - PI / 6.0).cos();
     let right_y = y2 as f64 - arrowhead_length * (angle - PI / 6.0).sin();
 
-    print!("Color inside: {:?}", &color);
     chart.draw_series(LineSeries::new(vec![(x1 as f64, y1 as f64), (x2 as f64, y2 as f64)], color)).unwrap();
     chart.draw_series(LineSeries::new(vec![(x2 as f64, y2 as f64), (left_x, left_y)], color)).unwrap();
     chart.draw_series(LineSeries::new(vec![(x2 as f64, y2 as f64), (right_x, right_y)], color)).unwrap();
@@ -32,7 +31,8 @@ fn draw_arrow(
 }
 
 pub fn plot_points(individual: &Vec<Vec<i32>>, info: &Info) {
-    let root = BitMapBackend::new("example.png", (1000, 1000))
+    let file_name = "plots/".to_owned() + &*info.instance_name.clone() + ".png";
+    let root = BitMapBackend::new(&file_name, (1000, 1000))
             .into_drawing_area();
     root.fill(&WHITE).unwrap();
 
@@ -57,7 +57,7 @@ pub fn plot_points(individual: &Vec<Vec<i32>>, info: &Info) {
     let padding_y = (max_y - min_y) * 0.1;
 
     let mut chart = ChartBuilder::on(&root)
-        .caption("X-Y Graph", ("sans-serif", 50))
+        .caption(info.instance_name.to_string()+" Graph", ("sans-serif", 50))
         .margin(30) // Increase margin for centering
         .build_cartesian_2d(
             (min_x - padding_x) as f64..(max_x + padding_x) as f64,
@@ -80,9 +80,6 @@ pub fn plot_points(individual: &Vec<Vec<i32>>, info: &Info) {
 
     let depot_x = info.depot.x_coord;
     let depot_y = info.depot.y_coord;
-    for color in &colors {
-        print!("Color: {:?}", color);
-    }
     for (i, nurse) in individual.iter().enumerate() {
         if nurse.is_empty() {
             continue;
@@ -115,7 +112,6 @@ pub fn plot_best_individual() {
         if file_num <  min_file {
             min_file = file_num;
             let fp = format!("{}/{}", folder_path, &filename.to_str().unwrap());
-            println!("fp: {}", &fp);
             let file_content = fs::read_to_string(&fp).unwrap();
             parsed_vec = from_str(&file_content).unwrap();
         }

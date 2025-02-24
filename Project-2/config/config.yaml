@@ -2,28 +2,29 @@
 train_file_num: 9
 
 # Hyperparameters
-population_size: 100
+population_size: 150
 n_generations: 100000
 n_elitism: 1
-n_stagnations: 3000
-crossover_rate: 0.85
-fitness_punishment_factor: 3.3
+n_stagnations: 1500
+crossover_rate: 0.8
+fitness_punishment_factor: 1.6
 
 # Mutation
 mutation_loops: 1
-heuristic_cluster_mutation_rate: 0.6
-random_swap_mutation_rate: 0.1
-heuristic_swap_mutation_rate: 0.3
+heuristic_cluster_mutation_rate: 0.15
+random_swap_mutation_rate: 0.05
+heuristic_swap_mutation_rate: 0.09
+heuristic_random_swap_mutation_rate: 0.08
 
 # Parent Selection
-n_parents_scaling: 3
+n_parents_scaling: 3.5
 
 # Linear Ranking
-s: 1.2
+s: 1.5
 
 # Crowding
 # 0 for deterministic, 1 for probabilistic
-scaling_factor: 1.
+scaling_factor: 1.1
 
 # Functions
 init_population_fn: Feasible

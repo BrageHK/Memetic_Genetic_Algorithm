@@ -1,12 +1,15 @@
-use rand::prelude::ThreadRng;
 use crate::structs::config::Config;
 use crate::structs::nurse::{Individual, Nurse};
+use crate::genetic::evaluate::fitness_nurse;
+use crate::genetic::parent_selection::linear_rank_probability;
+use crate::structs::io::Info;
 
 use rand::Rng;
+use rand::distr::weighted::WeightedIndex;
+use rand::distr::Distribution;
+use rand::prelude::ThreadRng;
 
 use rayon::prelude::*;
-use crate::genetic::evaluate::fitness_nurse;
-use crate::structs::io::Info;
 
 pub fn mutate_population(population: &mut Vec<Individual>, config: &Config, info: &Info) {
     population.par_iter_mut().for_each(|individual| mutate_nurse(&mut individual.nurses, &info, &config));
@@ -24,6 +27,9 @@ pub fn mutate_nurse(individual: &mut Vec<Nurse>, info: &Info, config: &Config) {
         }
         if rng.random_range(0.0..1.0) < config.heuristic_swap_mutation_rate {
             heuristic_swap_mutation(individual, &mut rng, &info, &config);
+        }
+        if rng.random_range(0.0..1.0) < config.heuristic_random_swap_mutation_rate {
+            heurisitc_random_cross_swap_mutation(individual, &mut rng, &info, &config);
         }
     }
 }
@@ -114,6 +120,95 @@ fn heuristic_swap_mutation(nurses: &mut Vec<Nurse>, rng: &mut ThreadRng, info: &
     }
 
     nurses[nurse_idx].route.swap(best_pos1, best_pos2);
+}
+
+struct SwapFitness {
+    i: usize,
+    j: usize,
+    fitness: f32,
+}
+fn heurisitc_random_cross_swap_mutation(nurses: &mut Vec<Nurse>, rng: &mut ThreadRng, info: &Info, config: &Config) {
+    let nurse_i = rng.random_range(0..nurses.len());
+    let nurse_len = nurses.len();
+
+    let mut nurse_j;
+    loop {
+        nurse_j = rng.random_range(0..nurse_len);
+        if nurse_i != nurse_j {
+            break;
+        }
+    }
+
+    if nurses[nurse_i].route.is_empty() && nurses[nurse_j].route.is_empty() {
+        return;
+    }
+
+    let mut fitnesses: Vec<SwapFitness> = Vec::new();
+
+    for patient_i in 0..nurses[nurse_i].route.len() {
+        for patient_j in 0..nurses[nurse_j].route.len() {
+            let patient_1 = *nurses[nurse_i].route.get(patient_i).unwrap();
+            let patient_2 = *nurses[nurse_j].route.get(patient_j).unwrap();
+
+            // Swap
+            nurses[nurse_i].route[patient_i] = patient_2;
+            nurses[nurse_j].route[patient_j] = patient_1;
+
+            let fitness = fitness_nurse(&nurses[nurse_i], &info, &config)
+                + fitness_nurse(&nurses[nurse_j], &info, &config);
+
+            if fitnesses.is_empty() {
+                fitnesses.push(SwapFitness{i: patient_i, j: patient_j, fitness})
+            } else {
+                // Insertion sort insertion.
+                let mut inserted = false;
+                let mut insertion_idx = 0;
+                for (i, s) in fitnesses.iter().enumerate() {
+                    if s.fitness < fitness {
+                        inserted = true;
+                        insertion_idx = i;
+                        break;
+                    }
+                }
+                if !inserted {
+                    fitnesses.push(SwapFitness{i: patient_i, j: patient_j, fitness});
+                } else {
+                    fitnesses.insert(insertion_idx, SwapFitness{i: patient_i, j: patient_j, fitness});
+                }
+            }
+
+            // Swap back
+            nurses[nurse_i].route[patient_i] = patient_1;
+            nurses[nurse_j].route[patient_j] = patient_2;
+        }
+    }
+
+
+    let mu = fitnesses.len();
+    let swap;
+    if mu == 0 {
+        return;
+    }
+    if mu < 2 {
+        swap = fitnesses.first().unwrap();
+    } else {
+        let probabilities: Vec<f32> = fitnesses
+            .iter()
+            .enumerate()
+            .map(|a| linear_rank_probability(mu, config.s, a.0))
+            .collect::<Vec<f32>>();
+
+        let mut dist = WeightedIndex::new(&probabilities).unwrap();
+
+        let swap_idx = dist.sample(rng);
+
+        swap = &fitnesses[swap_idx];
+    }
+
+    // Do final swap
+    let temp = nurses[nurse_i].route[swap.i];
+    nurses[nurse_i].route[swap.i] = nurses[nurse_j].route[swap.j];
+    nurses[nurse_j].route[swap.j] = temp;
 }
 
 fn insert_mutation() {
