@@ -143,14 +143,13 @@ pub fn crowding(population: &mut Vec<Individual>, children: &Vec<Individual>, co
     }
 }
 
+/// Single-threaded
 pub fn crowding_optimized(
     population: &mut Vec<Individual>,
     children: &Vec<Individual>,
     config: &Config,
     parent_indices: &Vec<usize>,
 ) {
-    let mut rng = rand::rng();
-
     parent_indices.chunks_exact(2).zip(children.chunks_exact(2))
         .for_each(|a| {
             let child1 = &a.1[0];
