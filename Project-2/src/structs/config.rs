@@ -22,6 +22,7 @@ pub enum CrossoverFN {
 #[derive(Deserialize, Serialize, Debug)]
 pub enum SurvivorSelectionFN {
     Crowding,
+    CrowdingOptimized,
 }
 
 #[derive(Debug, Deserialize)]
@@ -32,8 +33,12 @@ pub struct Config  {
     pub n_elitism: i32,
     pub n_stagnations: i32,
     pub crossover_rate: f32,
+
     pub mutation_loops: i32,
     pub heuristic_cluster_mutation_rate: f32,
+    pub random_swap_mutation_rate: f32,
+    pub heuristic_swap_mutation_rate: f32,
+
     pub init_population_fn: InitialPopType,
     pub parent_selection_fn: ParentSelectionFN,
     pub crossover_fn: CrossoverFN,

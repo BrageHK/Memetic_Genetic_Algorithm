@@ -7,18 +7,19 @@ use rayon::prelude::*;
 use crate::structs::config::{Config, SurvivorSelectionFN};
 use crate::structs::nurse::Individual;
 
-type SurvivorSelectionFNType = fn(&mut Vec<Individual>, &Vec<Individual>, &Config);
+//type SurvivorSelectionFNType = fn(&mut Vec<Individual>, &Vec<Individual>, &Config);
 
 pub fn survivor_selection(
     population: &mut Vec<Individual>,
+    parent_indices: &Vec<usize>,
     children: &Vec<Individual>,
     config: &Config
 ) {
-    let selection_fn: SurvivorSelectionFNType = match config.survivor_selection_fn {
-        SurvivorSelectionFN::Crowding => crowding
+    match config.survivor_selection_fn {
+        SurvivorSelectionFN::Crowding => crowding(population, &children, &config),
+        SurvivorSelectionFN::CrowdingOptimized => crowding_optimized(population, &children, &config, &parent_indices)
     };
 
-    selection_fn(population, children, config);
 }
 
 // With the right compile flags, this is faster than Hashmap version
@@ -139,5 +140,51 @@ pub fn crowding(population: &mut Vec<Individual>, children: &Vec<Individual>, co
         if rng.random_range(0.0..1.) < probability {
             population[closest_index] = child.clone();
         }
+    }
+}
+
+pub fn crowding_optimized(
+    population: &mut Vec<Individual>,
+    children: &Vec<Individual>,
+    config: &Config,
+    parent_indices: &Vec<usize>,
+) {
+    let mut rng = rand::rng();
+
+    parent_indices.chunks_exact(2).zip(children.chunks_exact(2))
+        .for_each(|a| {
+            let child1 = &a.1[0];
+            let child2 = &a.1[1];
+            let parent1_idx = a.0[0];
+            let parent2_idx = a.0[1];
+
+            if similarity(child1, &population[parent1_idx], population.len()) +
+                similarity(child2, &population[parent2_idx], population.len()) <
+                similarity(child1, &population[parent2_idx], population.len()) +
+                    similarity(child2, &population[parent1_idx], population.len()) {
+                compete(population, child1, parent1_idx, &config);
+                compete(population, child2, parent2_idx, &config);
+            } else {
+                compete(population, child1, parent2_idx, &config);
+                compete(population, child2, parent1_idx, &config);
+            }
+        });
+}
+
+fn compete(population: &mut Vec<Individual>, child: &Individual, parent_idx: usize, config: &Config) {
+    let parent = &population[parent_idx];
+    let child_fitness = child.fitness;
+    let parent_fitness = parent.fitness;
+    let probability;
+    if child_fitness > parent_fitness {
+        probability = child_fitness / (child_fitness + config.scaling_factor * parent_fitness);
+    } else if child.fitness == parent_fitness {
+        probability = 0.5;
+    } else {
+        probability = (config.scaling_factor * child_fitness) / (config.scaling_factor * child_fitness + parent_fitness);
+    }
+
+    if rng().random_range(0.0..1.) < probability {
+        population[parent_idx] = child.clone();
     }
 }

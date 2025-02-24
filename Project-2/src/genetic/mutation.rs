@@ -19,8 +19,11 @@ pub fn mutate_nurse(individual: &mut Vec<Nurse>, info: &Info, config: &Config) {
         if rng.random_range(0.0..1.0) < config.heuristic_cluster_mutation_rate  {
             heuristic_cluster_mutation(individual, &mut rng, &info, &config);
         }
-        if rng.random_range(0.0..1.0) < 0.5 {
+        if rng.random_range(0.0..1.0) < config.random_swap_mutation_rate {
             swap_mutation(individual, &mut rng, &info, &config);
+        }
+        if rng.random_range(0.0..1.0) < config.heuristic_swap_mutation_rate {
+            heuristic_swap_mutation(individual, &mut rng, &info, &config);
         }
     }
 }
@@ -89,31 +92,30 @@ fn heuristic_swap_mutation(nurses: &mut Vec<Nurse>, rng: &mut ThreadRng, info: &
     }
 
     let mut lowest_fitness = f32::INFINITY;
-    let mut best_nurse_idx = 0;
     let mut best_pos1 = 0;
     let mut best_pos2 = 0;
 
-    // Try the swap in every possible position in every nurse's route
-    for (curr_nurse_idx, nurse) in nurses.iter_mut().enumerate() {
-        let before_fitness = fitness_nurse(&nurse, &info, &config);
+    let before_fitness = fitness_nurse(&nurses[nurse_idx], &info, &config);
 
-        for i in 0..nurse.route.len() {
-            for j in 0..nurse.route.len() {
-                if i != j {
-                    nurse.route.swap(i,j);
-                    let after_fitness = fitness_nurse(&nurse, &info, &config);
-                    nurse.route.swap(j,i);
+    for i in 0..nurses[nurse_idx].route.len() {
+        for j in 0..nurses[nurse_idx].route.len() {
+            if i != j {
+                nurses[nurse_idx].route.swap(i,j);
+                let after_fitness = fitness_nurse(&nurses[nurse_idx], &info, &config);
+                nurses[nurse_idx].route.swap(j,i);
 
-                    if after_fitness - before_fitness < lowest_fitness {
-                        lowest_fitness = after_fitness - before_fitness;
-                        best_nurse_idx = curr_nurse_idx;
-                        best_pos1 = i;
-                        best_pos2 = j;
-                    }
+                if after_fitness - before_fitness < lowest_fitness {
+                    lowest_fitness = after_fitness - before_fitness;
+                    best_pos1 = i;
+                    best_pos2 = j;
                 }
             }
         }
     }
 
-    nurses[best_nurse_idx].route.swap(best_pos1, best_pos2);
+    nurses[nurse_idx].route.swap(best_pos1, best_pos2);
+}
+
+fn insert_mutation() {
+
 }

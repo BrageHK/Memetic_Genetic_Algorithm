@@ -32,8 +32,8 @@ pub(crate) fn start(conf_path: &str) {
         population.sort_by(|p1, p2| p2.fitness.total_cmp(&p1.fitness));
 
 
-        if i % 10 == 0 { println!("nGenerations: {} Best fitness: {} Execution_time {:?}", i, &population.last().unwrap().fitness, &start.elapsed()); }
-        if i % 100 == 0 && population.last().unwrap().fitness < 877. { save_individual(&population) }
+        if i % 100 == 0 { println!("nGenerations: {} Best fitness: {} Execution_time {:?}", i, &population.last().unwrap().fitness, &start.elapsed()); }
+        if i % 1000 == 0 && population.last().unwrap().fitness < 877. { save_individual(&population) }
 
         // Stagnation
         let curr_fitness = get_best_fitness_population(&population);
@@ -47,6 +47,7 @@ pub(crate) fn start(conf_path: &str) {
             stagnation_counter = 0;
             scramble_population(&mut population, &info, &config);
             fitness_population(&mut population, &info, &config, &mut fitness_hashmap);
+            best_fitness = get_best_fitness_population(&population);
         } else {
             stagnation_counter += 1;
         }
@@ -62,9 +63,7 @@ pub(crate) fn start(conf_path: &str) {
 
         fitness_population(&mut children_population, &info, &config, &mut fitness_hashmap);
 
-        //let start_survivor = Instant::now();
-        survivor_selection(&mut population, &children_population, &config);
-        //println!("Survivor time: {:?}", &start_survivor.elapsed());
+        survivor_selection(&mut population, &parent_indices, &children_population, &config);
 
         population.append(&mut elitism_members);
     }

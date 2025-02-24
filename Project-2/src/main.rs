@@ -6,7 +6,7 @@ mod util;
 mod test;
 
 use genetic::genetic_algo;
-use crate::util::plot::{plot_best_individual, plot_points};
+use crate::util::plot::plot_best_individual;
 
 fn main() {
     //plot_best_individual();

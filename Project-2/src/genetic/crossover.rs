@@ -21,21 +21,21 @@ pub fn population_crossover(
         CrossoverFN::Visma =>  visma_crossover
     };
 
-    let mut children: Mutex<Vec<Individual>> = Mutex::new(Vec::new());
+    let mut children: Vec<Individual> = parent_indices
+        .par_chunks_exact(2)
+        .flat_map(|parents| {
+            let (parent1_idx, parent2_idx) = (parents[0], parents[1]);
+            let (child_1, child_2) = crossover_fn(
+                &population[parent1_idx],
+                &population[parent2_idx],
+                &info,
+                &config
+            );
+            vec![child_1, child_2]
+        })
+        .collect();
 
-    parent_indices.par_chunks_exact(2).for_each(|parents| {
-        let (parent1_idx, parent2_idx) = (parents[0], parents[1]);
-        let (child_1, child_2) = crossover_fn(
-            &population[parent1_idx],
-            &population[parent2_idx],
-            &info,
-            &config
-        );
-        let mut guard = children.lock().unwrap();
-        guard.extend([child_1, child_2]);
-    });
-
-    children.into_inner().unwrap()
+    children
 }
 
 fn visma_crossover(
