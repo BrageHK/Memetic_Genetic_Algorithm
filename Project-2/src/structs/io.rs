@@ -25,14 +25,14 @@ pub struct Info {
 #[derive(Deserialize, Serialize, Debug)]
 pub struct Depot {
     pub return_time: u32,
-    pub x_coord: u32,
-    pub y_coord: u32
+    pub x_coord: i32,
+    pub y_coord: i32
 }
 
 #[derive(Deserialize, Serialize, Debug, Clone, Copy)]
 pub struct Patient {
-    pub x_coord: f32,
-    pub y_coord: f32,
+    pub x_coord: i32,
+    pub y_coord: i32,
     pub demand: u32,
     pub start_time: u32,
     pub end_time: u32,
