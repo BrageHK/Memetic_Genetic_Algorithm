@@ -7,7 +7,7 @@ n_generations: 100000
 n_elitism: 1
 n_stagnations: 350
 crossover_rate: 0.85
-mutation_loops: 2
+mutation_loops: 5
 heuristic_cluster_mutation_rate: 0.8
 fitness_punishment_factor: 3.3
 

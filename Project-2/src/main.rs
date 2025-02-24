@@ -9,6 +9,6 @@ use genetic::genetic_algo;
 use crate::util::plot::{plot_best_individual, plot_points};
 
 fn main() {
-    plot_best_individual();
-    //genetic_algo::start("config/config.yaml");
+    //plot_best_individual();
+    genetic_algo::start("config/config.yaml");
 }
