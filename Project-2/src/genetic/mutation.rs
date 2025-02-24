@@ -10,6 +10,7 @@ use rand::distr::Distribution;
 use rand::prelude::ThreadRng;
 
 use rayon::prelude::*;
+use crate::genetic::large_neighborhood::destroy_and_repair;
 
 pub fn mutate_population(population: &mut Vec<Individual>, config: &Config, info: &Info) {
     population.par_iter_mut().for_each(|individual| mutate_nurse(&mut individual.nurses, &info, &config));
@@ -30,6 +31,11 @@ pub fn mutate_nurse(individual: &mut Vec<Nurse>, info: &Info, config: &Config) {
         }
         if rng.random_range(0.0..1.0) < config.heuristic_random_swap_mutation_rate {
             heurisitc_random_cross_swap_mutation(individual, &mut rng, &info, &config);
+        }
+
+        // Large neighbourhood
+        if rng.random_range(0.0..1.0) < config.large_neighbourhood_mutation_rate {
+            destroy_and_repair(individual, &info, &config);
         }
     }
 }
@@ -209,8 +215,4 @@ fn heurisitc_random_cross_swap_mutation(nurses: &mut Vec<Nurse>, rng: &mut Threa
     let temp = nurses[nurse_i].route[swap.i];
     nurses[nurse_i].route[swap.i] = nurses[nurse_j].route[swap.j];
     nurses[nurse_j].route[swap.j] = temp;
-}
-
-fn insert_mutation() {
-
 }

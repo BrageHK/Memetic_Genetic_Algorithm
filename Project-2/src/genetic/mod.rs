@@ -5,4 +5,5 @@ mod evaluate;
 mod crossover;
 pub mod parent_selection;
 pub mod survivor_selection;
-mod large_neighborhood;
+pub mod large_neighborhood;
+mod island;

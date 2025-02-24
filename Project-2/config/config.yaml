@@ -3,21 +3,22 @@ train_file_num: 9
 
 # Hyperparameters
 population_size: 150
-n_generations: 100000
+n_generations: 10000000
 n_elitism: 1
-n_stagnations: 1500
-crossover_rate: 0.8
-fitness_punishment_factor: 1.6
+n_stagnations: 3000
+crossover_rate: 0.9
+fitness_punishment_factor: 2.0
 
 # Mutation
-mutation_loops: 1
-heuristic_cluster_mutation_rate: 0.15
+mutation_loops: 3
+heuristic_cluster_mutation_rate: 0.08
 random_swap_mutation_rate: 0.05
 heuristic_swap_mutation_rate: 0.09
 heuristic_random_swap_mutation_rate: 0.08
+large_neighbourhood_mutation_rate: 0.05
 
 # Parent Selection
-n_parents_scaling: 3.5
+n_parents_scaling: 2.0
 
 # Linear Ranking
 s: 1.5
@@ -27,7 +28,7 @@ s: 1.5
 scaling_factor: 1.1
 
 # Functions
-init_population_fn: Feasible
+init_population_fn: File #Feasible, File
 parent_selection_fn: LinearRanking
 crossover_fn: Visma
 survivor_selection_fn: CrowdingOptimized

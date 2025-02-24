@@ -7,6 +7,7 @@ use std::io::Read;
 #[derive(Deserialize, Serialize, Debug)]
 pub enum InitialPopType {
     Feasible,
+    File,
 }
 
 #[derive(Debug, Deserialize)]
@@ -39,6 +40,7 @@ pub struct Config  {
     pub random_swap_mutation_rate: f32,
     pub heuristic_swap_mutation_rate: f32,
     pub heuristic_random_swap_mutation_rate: f32,
+    pub large_neighbourhood_mutation_rate: f32,
 
     pub init_population_fn: InitialPopType,
     pub parent_selection_fn: ParentSelectionFN,
