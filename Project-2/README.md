@@ -8,4 +8,13 @@
 
 # Own ideas
 * Heuristic mutation (swap those who are closer, or based on start_time/end_time)
-* 
+
+# SSH
+tmux new -s bio-rust
+
+cargo run --release
+
+crtl+B, then D
+
+Attach later:
+tmux attach -t bio-rust
