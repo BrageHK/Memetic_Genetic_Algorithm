@@ -5,7 +5,6 @@ use crate::genetic::evaluate::is_feasible_fitness_nurse;
 use crate::structs::config::{Config, InitialPopType};
 
 use rand::{rng, Rng};
-use rand::prelude::IndexedRandom;
 use serde_json::from_str;
 
 type InitIndividualFN = fn(&Info, &Config) -> Vec<Individual>;
@@ -26,7 +25,7 @@ fn feasible_pop(info: &Info, config: &Config) -> Vec<Individual> {
     pop
 }
 
-pub(crate) fn feasible_init_individual(info: &Info, config: &Config) -> Individual {
+pub(crate) fn feasible_init_individual(info: &Info, _config: &Config) -> Individual {
     let mut rng = rand::rng();
     let patients = info.patients
         .iter()

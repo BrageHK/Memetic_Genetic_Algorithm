@@ -12,67 +12,22 @@ pub fn fitness_population(
     config: &Config,
     fitness_hashmap: &mut HashMap<Vec<Nurse>, f32>,
 ) {
-    if config.use_islands {
-        fitness_serial(population, &info, &config, fitness_hashmap);
-    } else {
-        fitness_parallel(population, &info, &config, fitness_hashmap);
-    }
+    fitness_no_hashmap(population, &info, &config);
 }
 
-fn fitness_serial<'a>(
-    population: &'a mut Vec<Individual>,
+fn fitness_no_hashmap(
+    population: &mut Vec<Individual>,
     info: &Info,
     config: &Config,
-    fitness_hashmap: &mut HashMap<Vec<Nurse>, f32>,
 ) {
-    // Compute fitness scores in parallel
     population
         .iter_mut()
-        .for_each(|mut individual| {
-            if let Some(&score) = fitness_hashmap.get(&individual.nurses) {
-                individual.fitness = score;
-            } else {
-                let score: f32 = individual.nurses.par_iter()
-                    .map(|nurse| fitness_nurse(nurse, info, config))
-                    .sum();
-                fitness_hashmap.insert(individual.nurses.clone(), score);
-                individual.fitness = score;
-            }
-        });
-}
-
-pub fn fitness_parallel<'a>(
-    population: &'a mut Vec<Individual>,
-    info: &Info,
-    config: &Config,
-    fitness_hashmap: &mut HashMap<Vec<Nurse>, f32>,
-) {
-    // Compute fitness scores in parallel
-    let new_fitness_scores: Vec<(Vec<Nurse>, f32)> = population
-        .par_iter()
-        .filter_map(|individual| {
-            if let Some(&score) = fitness_hashmap.get(&individual.nurses) {
-                Some((individual.nurses.clone(), score))
-            } else {
-                let score: f32 = individual.nurses.par_iter()
-                    .map(|nurse| fitness_nurse(nurse, info, config))
-                    .sum();
-                Some((individual.nurses.clone(), score))
-            }
-        })
-        .collect();
-
-    // Update the shared HashMap
-    for (nurses, score) in new_fitness_scores {
-        fitness_hashmap.insert(nurses, score);
-    }
-
-    // Assign fitness scores to individuals
-    for individual in population.iter_mut() {
-        if let Some(&score) = fitness_hashmap.get(&individual.nurses) {
+        .for_each(|individual| {
+            let score: f32 = individual.nurses.iter()
+                .map(|nurse| fitness_nurse(nurse, info, config))
+                .sum();
             individual.fitness = score;
-        }
-    }
+        });
 }
 
 pub fn fitness_nurse(nurse: &Nurse, info: &Info, config: &Config) -> f32 {
@@ -117,15 +72,6 @@ pub fn fitness_nurse(nurse: &Nurse, info: &Info, config: &Config) -> f32 {
     }
 
     fitness
-}
-
-pub fn is_feasible_fitness_individual(individual: &Individual, info: &Info) -> bool {
-    for nurse in &individual.nurses {
-        if !is_feasible_fitness_nurse(nurse, &info) {
-            return false;
-        }
-    }
-    true
 }
 
 pub fn is_feasible_fitness_nurse(nurse: &Nurse, info: &Info) -> bool {

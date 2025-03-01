@@ -84,10 +84,10 @@ pub fn heuristic_cluster_mutation(nurses: &mut Vec<Nurse>, rng: &mut ThreadRng, 
     nurses[best_nurse_idx].route.splice(best_route_idx..best_route_idx, cluster);
 }
 
-fn swap_mutation(nurses: &mut Vec<Nurse>, rng: &mut ThreadRng, info: &Info, config: &Config) {
+fn swap_mutation(nurses: &mut Vec<Nurse>, rng: &mut ThreadRng, _info: &Info, _config: &Config) {
     let nurse_idx = rng.random_range(0..nurses.len());
 
-    let mut nurse: &mut Nurse = nurses.get_mut(nurse_idx).unwrap();
+    let nurse: &mut Nurse = nurses.get_mut(nurse_idx).unwrap();
     if nurse.route.len() > 1 {
         let i = rng.random_range(0..nurse.route.len());
         let mut j;
@@ -212,7 +212,7 @@ fn heurisitc_random_cross_swap_mutation(nurses: &mut Vec<Nurse>, rng: &mut Threa
             .map(|a| linear_rank_probability(mu, config.s, a.0))
             .collect::<Vec<f32>>();
 
-        let mut dist = WeightedIndex::new(&probabilities).unwrap();
+        let dist = WeightedIndex::new(&probabilities).unwrap();
 
         let swap_idx = dist.sample(rng);
 
