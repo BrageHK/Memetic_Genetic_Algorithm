@@ -20,7 +20,7 @@ pub fn init_population(info: &Info, config: &Config) -> Vec<Individual> {
 
 fn feasible_pop(info: &Info, config: &Config) -> Vec<Individual> {
     let mut pop = Vec::new();
-    for _ in 0..info.nbr_nurses as usize {
+    for _ in 0..config.population_size as  usize {
         pop.push(feasible_init_individual(&info, &config));
     }
     pop

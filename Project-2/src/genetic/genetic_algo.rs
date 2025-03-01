@@ -5,6 +5,8 @@ use crate::genetic::initialize_population::init_population;
 use crate::genetic::mutation::mutate_population;
 use crate::genetic::parent_selection::parent_selection;
 use crate::genetic::crossover::population_crossover;
+use crate::genetic::elitism::get_elitism_members;
+use crate::genetic::scramble::scramble_population;
 use crate::genetic::survivor_selection::survivor_selection;
 use crate::structs::io;
 use crate::structs::config::Config;
@@ -34,17 +36,14 @@ pub(crate) fn start(conf_path: &str) {
 
         if i % 100 == 0 { println!("nGenerations: {} Best fitness: {} Execution_time {:?}", i, &population.last().unwrap().fitness, &start.elapsed()); }
         if i % 1000 == 0 && population.last().unwrap().fitness < 867. { save_individual(&population) }
-
-
-        let mut elitism_members = population[population.len()-config.n_elitism as usize..].to_vec();
-        population.drain(0..config.n_elitism as usize);
+        /* if i % 10 == 0 { print!("Fitnesses: ["); for individual in population.iter() { print!("({}, {}),", individual.fitness , is_feasible_fitness_individual(&individual, &info)); } println!("]"); println!("Population len: {}", population.len()) } */
 
         // Stagnation
         let curr_fitness = get_best_fitness_population(&population);
         if best_fitness > curr_fitness {
             stagnation_counter = 0;
             best_fitness = curr_fitness;
-            if curr_fitness < 877. {
+            if curr_fitness < 867. {
                 best_solution = get_best_solution_population(&population);
             }
         } else if stagnation_counter > (config.n_stagnations) {
@@ -55,6 +54,10 @@ pub(crate) fn start(conf_path: &str) {
         } else {
             stagnation_counter += 1;
         }
+        //let mut elitism_members = population[population.len()-config.n_elitism as usize..].to_vec();
+        let mut elitism_members = get_elitism_members(&population, &config);
+        population.drain(0..config.n_elitism as usize);
+
 
         let parent_indices: Vec<usize> = parent_selection(&mut population, &config);
 
@@ -68,10 +71,4 @@ pub(crate) fn start(conf_path: &str) {
 
         population.append(&mut elitism_members);
     }
-}
-
-fn scramble_population(population: &mut Vec<Individual>, info: &Info, config: &Config) {
-    println!("Stagnated! Scrambling!");
-    let mut new_population = init_population(&info, &config);
-    *population = new_population;
 }

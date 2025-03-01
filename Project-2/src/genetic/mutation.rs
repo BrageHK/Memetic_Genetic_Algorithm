@@ -13,29 +13,37 @@ use rayon::prelude::*;
 use crate::genetic::large_neighborhood::destroy_and_repair;
 
 pub fn mutate_population(population: &mut Vec<Individual>, config: &Config, info: &Info) {
+    if config.use_islands {
+        mutate_serial(population, &config, &info);
+    } else {
+        mutate_parallel(population, &config, &info);
+    }
+}
+
+fn mutate_parallel(population: &mut Vec<Individual>, config: &Config, info: &Info) {
     population.par_iter_mut().for_each(|individual| mutate_nurse(&mut individual.nurses, &info, &config));
 }
+
+fn mutate_serial(population: &mut Vec<Individual>, config: &Config, info: &Info) {
+    population.iter_mut().for_each(|individual| mutate_nurse(&mut individual.nurses, &info, &config));
+}
+
+type MutationFN = fn(nurses: &mut Vec<Nurse>, rng: &mut ThreadRng, info: &Info, config: &Config);
 
 pub fn mutate_nurse(individual: &mut Vec<Nurse>, info: &Info, config: &Config) {
     let mut rng: ThreadRng= rand::rng();
 
-    for _ in 0..config.mutation_loops {
-        if rng.random_range(0.0..1.0) < config.heuristic_cluster_mutation_rate  {
-            heuristic_cluster_mutation(individual, &mut rng, &info, &config);
-        }
-        if rng.random_range(0.0..1.0) < config.random_swap_mutation_rate {
-            swap_mutation(individual, &mut rng, &info, &config);
-        }
-        if rng.random_range(0.0..1.0) < config.heuristic_swap_mutation_rate {
-            heuristic_swap_mutation(individual, &mut rng, &info, &config);
-        }
-        if rng.random_range(0.0..1.0) < config.heuristic_random_swap_mutation_rate {
-            heurisitc_random_cross_swap_mutation(individual, &mut rng, &info, &config);
-        }
+    let mutations: [(MutationFN, f32); 5] = [
+        (heuristic_cluster_mutation, config.heuristic_cluster_mutation_rate),
+        (swap_mutation, config.random_swap_mutation_rate),
+        (heuristic_swap_mutation, config.heuristic_swap_mutation_rate),
+        (heurisitc_random_cross_swap_mutation, config.heuristic_random_swap_mutation_rate),
+        (destroy_and_repair, config.large_neighbourhood_mutation_rate),
+    ];
 
-        // Large neighbourhood
-        if rng.random_range(0.0..1.0) < config.large_neighbourhood_mutation_rate {
-            destroy_and_repair(individual, &info, &config);
+    for mutation_pair in &mutations {
+        if rng.random_range(0.0..1.0) < mutation_pair.1 {
+            mutation_pair.0(individual, &mut rng, &info, &config);
         }
     }
 }

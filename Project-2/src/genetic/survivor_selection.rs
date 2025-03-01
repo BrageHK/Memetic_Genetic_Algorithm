@@ -1,8 +1,7 @@
 //NODE: NO DUPLICATE SOLUTIONS
 
-use std::collections::{HashMap, HashSet};
-use cpu_time::ProcessTime;
-use rand::{rng, thread_rng, Rng};
+use std::collections::{HashSet};
+use rand::{rng, Rng};
 use rayon::prelude::*;
 use crate::structs::config::{Config, SurvivorSelectionFN};
 use crate::structs::nurse::Individual;

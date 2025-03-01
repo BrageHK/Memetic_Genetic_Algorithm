@@ -6,7 +6,42 @@ use std::collections::HashMap;
 use ordered_float::OrderedFloat;
 use rayon::prelude::*;
 
-pub fn fitness_population<'a>(
+pub fn fitness_population(
+    population: &mut Vec<Individual>,
+    info: &Info,
+    config: &Config,
+    fitness_hashmap: &mut HashMap<Vec<Nurse>, f32>,
+) {
+    if config.use_islands {
+        fitness_serial(population, &info, &config, fitness_hashmap);
+    } else {
+        fitness_parallel(population, &info, &config, fitness_hashmap);
+    }
+}
+
+fn fitness_serial<'a>(
+    population: &'a mut Vec<Individual>,
+    info: &Info,
+    config: &Config,
+    fitness_hashmap: &mut HashMap<Vec<Nurse>, f32>,
+) {
+    // Compute fitness scores in parallel
+    population
+        .iter_mut()
+        .for_each(|mut individual| {
+            if let Some(&score) = fitness_hashmap.get(&individual.nurses) {
+                individual.fitness = score;
+            } else {
+                let score: f32 = individual.nurses.par_iter()
+                    .map(|nurse| fitness_nurse(nurse, info, config))
+                    .sum();
+                fitness_hashmap.insert(individual.nurses.clone(), score);
+                individual.fitness = score;
+            }
+        });
+}
+
+pub fn fitness_parallel<'a>(
     population: &'a mut Vec<Individual>,
     info: &Info,
     config: &Config,

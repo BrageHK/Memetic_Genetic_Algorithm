@@ -1,4 +1,3 @@
-use std::sync::Mutex;
 use crate::structs::io::{Info, Patient};
 use crate::structs::nurse::Individual;
 use crate::genetic::evaluate::fitness_nurse;
@@ -21,19 +20,37 @@ pub fn population_crossover(
         CrossoverFN::Visma =>  visma_crossover
     };
 
-    let mut children: Vec<Individual> = parent_indices
-        .par_chunks_exact(2)
-        .flat_map(|parents| {
-            let (parent1_idx, parent2_idx) = (parents[0], parents[1]);
-            let (child_1, child_2) = crossover_fn(
-                &population[parent1_idx],
-                &population[parent2_idx],
-                &info,
-                &config
-            );
-            vec![child_1, child_2]
-        })
-        .collect();
+    // Could make this shorter, but don't care.
+    let mut children: Vec<Individual>;
+    if config.use_islands {
+        children = parent_indices
+            .chunks_exact(2)
+            .flat_map(|parents| {
+                let (parent1_idx, parent2_idx) = (parents[0], parents[1]);
+                let (child_1, child_2) = crossover_fn(
+                    &population[parent1_idx],
+                    &population[parent2_idx],
+                    &info,
+                    &config
+                );
+                vec![child_1, child_2]
+            })
+            .collect();
+    } else {
+        children = parent_indices
+            .par_chunks_exact(2)
+            .flat_map(|parents| {
+                let (parent1_idx, parent2_idx) = (parents[0], parents[1]);
+                let (child_1, child_2) = crossover_fn(
+                    &population[parent1_idx],
+                    &population[parent2_idx],
+                    &info,
+                    &config
+                );
+                vec![child_1, child_2]
+            })
+            .collect();
+    }
 
     children
 }

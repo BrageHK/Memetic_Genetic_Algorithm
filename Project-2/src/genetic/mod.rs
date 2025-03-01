@@ -7,3 +7,5 @@ pub mod parent_selection;
 pub mod survivor_selection;
 pub mod large_neighborhood;
 mod island;
+mod elitism;
+pub mod scramble;

@@ -26,8 +26,16 @@ pub enum SurvivorSelectionFN {
     CrowdingOptimized,
 }
 
+#[derive(Deserialize, Serialize, Debug)]
+pub enum ScrambleFN {
+    Delete,
+    Keep,
+}
+
 #[derive(Debug, Deserialize)]
 pub struct Config  {
+    pub use_islands: bool,
+
     pub train_file_num: i32,
     pub population_size: i32,
     pub n_generations: i32,
@@ -35,7 +43,6 @@ pub struct Config  {
     pub n_stagnations: i32,
     pub crossover_rate: f32,
 
-    pub mutation_loops: i32,
     pub heuristic_cluster_mutation_rate: f32,
     pub random_swap_mutation_rate: f32,
     pub heuristic_swap_mutation_rate: f32,
@@ -46,6 +53,8 @@ pub struct Config  {
     pub parent_selection_fn: ParentSelectionFN,
     pub crossover_fn: CrossoverFN,
     pub survivor_selection_fn: SurvivorSelectionFN,
+    pub scramble_fn: ScrambleFN,
+
     pub scaling_factor: f32,
     pub n_parents_scaling: f32,
     pub fitness_punishment_factor: f32,
