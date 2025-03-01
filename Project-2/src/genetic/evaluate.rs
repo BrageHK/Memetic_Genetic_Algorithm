@@ -2,15 +2,12 @@ use crate::structs::config::Config;
 use crate::structs::io::{Info, Patient};
 use crate::structs::nurse::{Individual, Nurse};
 
-use std::collections::HashMap;
 use ordered_float::OrderedFloat;
-use rayon::prelude::*;
 
 pub fn fitness_population(
     population: &mut Vec<Individual>,
     info: &Info,
     config: &Config,
-    fitness_hashmap: &mut HashMap<Vec<Nurse>, f32>,
 ) {
     fitness_no_hashmap(population, &info, &config);
 }
