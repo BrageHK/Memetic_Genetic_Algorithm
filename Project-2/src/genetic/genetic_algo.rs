@@ -1,6 +1,6 @@
 use cpu_time::ProcessTime;
 
-use crate::genetic::evaluate::{fitness_population, get_best_fitness_population, get_best_solution_population};
+use crate::genetic::evaluate::{fitness_population, get_best_fitness_population};
 use crate::genetic::initialize_population::init_population;
 use crate::genetic::mutation::mutate_population;
 use crate::genetic::parent_selection::parent_selection;
@@ -57,7 +57,10 @@ pub(crate) fn start(conf_path: &str) {
 
         let parent_indices: Vec<usize> = parent_selection(&mut population, &config);
 
+        let start = ProcessTime::now();
         let mut children_population = population_crossover(&mut population, &parent_indices, &info, &config);
+        let cpu_time = start.elapsed();
+        //println!("Crossover time {:?}", cpu_time);
 
         mutate_population(&mut children_population, &config, &info);
 
