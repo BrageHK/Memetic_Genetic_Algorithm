@@ -6,6 +6,7 @@ use crate::structs::io;
 use crate::structs::io::Info;
 use crate::structs::nurse::Individual;
 
+
 pub fn get_initial() -> (Info, Config, Vec<Individual>) {
     let config = Config::new("config/config_test.yaml");
     let info = io::read_from_json(&config).unwrap();

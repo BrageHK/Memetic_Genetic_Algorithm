@@ -74,7 +74,7 @@ where
 }
 
 pub fn read_from_json(config: &Config) -> Result<Info, Box<dyn Error>>{
-    let f = File::open("train/train_".to_string() + &*config.train_file_num.to_string() + ".json")?;
+    let f = File::open("train/".to_string() + &*config.file_name + ".json")?;
     let reader = BufReader::new(f);
     let info = from_reader(reader)?;
     Ok(info)

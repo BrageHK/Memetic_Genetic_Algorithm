@@ -1,11 +1,15 @@
 use std::f64::consts::PI;
 use std::fs;
+
 use serde_json::from_str;
+
 use plotters::prelude::*;
 use plotters::coord::types::RangedCoordf64;
+use plotters::style::RGBColor;
+use crate::genetic::evaluate::duration_demand_nurse;
 use crate::structs::config::Config;
 use crate::structs::io::{read_from_json, Info};
-use plotters::style::RGBColor;
+use crate::structs::nurse::Individual;
 
 fn draw_arrow(
     chart: &mut ChartContext<BitMapBackend,
@@ -76,7 +80,10 @@ pub fn plot_points(individual: &Vec<Vec<i32>>, info: &Info) {
         }
     }
 
-    let colors: Vec<RGBColor> = generate_colors(info.nbr_nurses as usize);
+
+
+    //let colors: Vec<RGBColor> = generate_colors(info.nbr_nurses as usize);
+    let colors: Vec<RGBColor> = generate_colors();
 
     let depot_x = info.depot.x_coord;
     let depot_y = info.depot.y_coord;
@@ -98,7 +105,7 @@ pub fn plot_points(individual: &Vec<Vec<i32>>, info: &Info) {
 
 pub fn plot_best_individual() {
     let info = read_from_json(&Config::new("config/config.yaml")).unwrap();
-    let folder_path = "./individuals"; // Change to your actual folder path
+    let folder_path = "./individuals_9"; // Change to your actual folder path
 
     // Find the file with the smallest numerical name
     let mut min_file: f32 = f32::INFINITY;
@@ -119,7 +126,7 @@ pub fn plot_best_individual() {
 
     plot_points(&parsed_vec, &info);
 }
-fn generate_colors(n: usize) -> Vec<RGBColor> {
+fn _generate_colors(n: usize) -> Vec<RGBColor> {
     let golden_ratio_conjugate = 0.61803398875; // Helps spread colors better
     let mut hue = 0.0;
 
@@ -129,6 +136,35 @@ fn generate_colors(n: usize) -> Vec<RGBColor> {
             hsl_to_rgb(hue, 0.85, 0.55) // Higher saturation & balanced brightness
         })
         .collect()
+}
+fn generate_colors() -> Vec<RGBColor> {
+    vec![
+        RGBColor { 0: 255, 1: 0, 2: 0 },       // Red
+        RGBColor { 0: 0, 1: 255, 2: 0 },       // Green
+        RGBColor { 0: 0, 1: 0, 2: 255 },       // Blue
+        RGBColor { 0: 255, 1: 255, 2: 0 },     // Yellow
+        RGBColor { 0: 255, 1: 0, 2: 255 },     // Ma1enta
+        RGBColor { 0: 0, 1: 255, 2: 255 },     // Cyan
+        RGBColor { 0: 128, 1: 0, 2: 0 },       // Maroon
+        RGBColor { 0: 0, 1: 128, 2: 0 },       // Dark Green
+        RGBColor { 0: 0, 1: 0, 2: 128 },       // Navy
+        RGBColor { 0: 128, 1: 128, 2: 0 },     // Olive
+        RGBColor { 0: 128, 1: 0, 2: 128 },     // Purple
+        RGBColor { 0: 0, 1: 128, 2: 128 },     // Teal
+        RGBColor { 0: 192, 1: 192, 2: 192 },   // Silver
+        RGBColor { 0: 128, 1: 128, 2: 128 },   // Gray
+        RGBColor { 0: 255, 1: 165, 2: 0 },     // Oran1e
+        RGBColor { 0: 255, 1: 192, 2: 203 },   // Pink
+        RGBColor { 0: 165, 1: 42, 2: 42 },     // Brown
+        RGBColor { 0: 0, 1: 255, 2: 127 },     // Sprin1 Green
+        RGBColor { 0: 70, 1: 130, 2: 180 },    // Steel Blue
+        RGBColor { 0: 255, 1: 99, 2: 71 },     // Tomato
+        RGBColor { 0: 147, 1: 112, 2: 219 },   // Medium Purple
+        RGBColor { 0: 255, 1: 215, 2: 0 },     // Gold
+        RGBColor { 0: 0, 1: 128, 2: 128 },     // Dark Cyan
+        RGBColor { 0: 255, 1: 140, 2: 0 },     // Dark Oran1e
+        RGBColor { 0: 75, 1: 0, 2: 130 },      // Indi1o
+    ]
 }
 
 fn hsl_to_rgb(h: f64, s: f64, l: f64) -> RGBColor {
@@ -148,4 +184,11 @@ fn hsl_to_rgb(h: f64, s: f64, l: f64) -> RGBColor {
         ((g + m) * 255.0) as u8,
         ((b + m) * 255.0) as u8,
     )
+}
+
+pub fn print_best_solution(individual: &Individual, info: &Info) {
+    for nurse in individual.nurses.iter() {
+        print!("");
+        let (capacity, duration) = duration_demand_nurse(&nurse, &info);
+    }
 }

@@ -36,7 +36,7 @@ pub enum ScrambleFN {
 pub struct Config  {
     pub use_islands: bool,
 
-    pub train_file_num: i32,
+    pub file_name: String,
     pub population_size: i32,
     pub n_generations: i32,
     pub n_elitism: i32,

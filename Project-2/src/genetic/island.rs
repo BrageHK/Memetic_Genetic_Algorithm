@@ -108,5 +108,5 @@ pub(crate) fn start(conf_path: &str) {
     }
 
     // After all islands have evolved, you can implement migration logic here
-    // For example, exchange the best individuals between islands periodically
+    // For example, exchange the best individuals_9 between islands periodically
 }

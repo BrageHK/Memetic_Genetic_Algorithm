@@ -26,7 +26,7 @@ pub fn linear_rank_probability(mu: usize, s: f32, i: usize) -> f32 {
     ((2. - s)/mu as f32) + ((2 * i) as f32 * (s - 1.)) / (mu * (mu - 1)) as f32
 }
 
-/// Return indices of the best individuals.
+/// Return indices of the best individuals_9.
 /// Population must be sorted
 pub fn linear_ranking(population: &Vec<Individual>, config: &Config) -> Vec<usize> {
     let mu = population.len();

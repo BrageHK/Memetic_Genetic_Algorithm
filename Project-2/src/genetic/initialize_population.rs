@@ -57,11 +57,11 @@ pub(crate) fn feasible_init_individual(info: &Info, config: &Config) -> Individu
 }
 
 fn get_population_from_file(info: &Info, config: &Config) -> Vec<Individual> {
-    let folder_path = "./individuals";
+    let folder_path = "./individuals/".to_owned() + &config.file_name.to_string() + "/";
 
     let mut population: Vec<Vec<Vec<i32>>> = Vec::new();
 
-    for entry in fs::read_dir(folder_path).unwrap() {
+    for entry in fs::read_dir(&folder_path).unwrap() {
         let entry = entry.unwrap();
         let filename = entry.file_name();
         let fp = format!("{}/{}", folder_path, &filename.to_str().unwrap());

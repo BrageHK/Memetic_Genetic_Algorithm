@@ -1,6 +1,6 @@
 use std::collections::HashMap;
 use std::time::Instant;
-use crate::genetic::evaluate::{fitness_population, get_best_fitness_population, is_feasible_fitness_individual, get_best_solution_population};
+use crate::genetic::evaluate::{fitness_population, get_best_fitness_population, get_best_solution_population};
 use crate::genetic::initialize_population::init_population;
 use crate::genetic::mutation::mutate_population;
 use crate::genetic::parent_selection::parent_selection;
@@ -10,8 +10,7 @@ use crate::genetic::scramble::scramble_population;
 use crate::genetic::survivor_selection::survivor_selection;
 use crate::structs::io;
 use crate::structs::config::Config;
-use crate::structs::io::Info;
-use crate::structs::nurse::{Individual, Nurse};
+use crate::structs::nurse::Nurse;
 use crate::util::save_individual::save_individual;
 
 pub(crate) fn start(conf_path: &str) {
@@ -34,8 +33,11 @@ pub(crate) fn start(conf_path: &str) {
         population.sort_by(|p1, p2| p2.fitness.total_cmp(&p1.fitness));
 
 
-        if i % 100 == 0 { println!("nGenerations: {} Best fitness: {} Execution_time {:?}", i, &population.last().unwrap().fitness, &start.elapsed()); }
-        if i % 1000 == 0 && population.last().unwrap().fitness < 867. { save_individual(&population) }
+        if i % 100 == 0 {
+            let fitnesses: Vec<f32> = population.iter().map(|x| x.fitness).collect::<Vec<f32>>();
+            let last_fitnesses = &fitnesses[fitnesses.len()-5..];
+            println!("nGenerations: {} Best fitnesses: {:?} Execution_time {:?}", i, last_fitnesses, &start.elapsed());
+        }
         /* if i % 10 == 0 { print!("Fitnesses: ["); for individual in population.iter() { print!("({}, {}),", individual.fitness , is_feasible_fitness_individual(&individual, &info)); } println!("]"); println!("Population len: {}", population.len()) } */
 
         // Stagnation
@@ -43,8 +45,9 @@ pub(crate) fn start(conf_path: &str) {
         if best_fitness > curr_fitness {
             stagnation_counter = 0;
             best_fitness = curr_fitness;
-            if curr_fitness < 867. {
+            if curr_fitness < 860. {
                 best_solution = get_best_solution_population(&population);
+                save_individual(&population);
             }
         } else if stagnation_counter > (config.n_stagnations) {
             stagnation_counter = 0;

@@ -67,7 +67,7 @@ pub fn fitness_parallel<'a>(
         fitness_hashmap.insert(nurses, score);
     }
 
-    // Assign fitness scores to individuals
+    // Assign fitness scores to individuals_9
     for individual in population.iter_mut() {
         if let Some(&score) = fitness_hashmap.get(&individual.nurses) {
             individual.fitness = score;
@@ -117,6 +117,35 @@ pub fn fitness_nurse(nurse: &Nurse, info: &Info, config: &Config) -> f32 {
     }
 
     fitness
+}
+
+pub fn duration_demand_nurse(nurse: &Nurse, info: &Info) -> (u32, f32) {
+    if nurse.route.is_empty() {
+        return (0, 0.0);
+    }
+
+    let mut time_used: f32 = 0.0;
+    let mut curr_demand: u32 = 0;
+
+    // All patients
+    let mut prev_p_idx = 0;
+    for p in &nurse.route {
+        let patient = info.patients[*p as usize];
+        let p = p+1;
+        let travel_time = info.travel_times[prev_p_idx][p as usize];
+        time_used += travel_time;
+        if patient.start_time as f32 > time_used {
+            time_used = patient.start_time as f32;
+        }
+        time_used += patient.care_time as f32;
+        curr_demand += patient.demand;
+        prev_p_idx = p as usize;
+    }
+
+    // From last patient to depot
+    time_used += info.travel_times[0][prev_p_idx];
+
+    (curr_demand, time_used)
 }
 
 pub fn is_feasible_fitness_individual(individual: &Individual, info: &Info) -> bool {

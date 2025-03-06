@@ -10,6 +10,7 @@
 * Heuristic mutation (swap those who are closer, or based on start_time/end_time)
 
 # SSH
+export TERM=xterm-256color
 tmux new -s bio-rust
 
 cargo run --release

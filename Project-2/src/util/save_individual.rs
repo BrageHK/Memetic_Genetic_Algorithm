@@ -14,6 +14,6 @@ pub fn save_individual(population: &Vec<Individual>) {
         let incremented_route = nurse.route.iter().map(|&num| num + 1).collect();
         individual.push(incremented_route);
     }
-    let mut file = File::create("individuals/".to_string() + &*best_individual.fitness.to_string()).unwrap();
+    let mut file = File::create("individuals_9/".to_string() + &*best_individual.fitness.to_string()).unwrap();
     file.write_all(format!("{:?}",&individual).as_bytes()).unwrap();
 }
