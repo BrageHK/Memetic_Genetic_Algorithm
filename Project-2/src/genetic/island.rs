@@ -49,7 +49,7 @@ impl Island {
     }
 
     fn evolve(&mut self, info: &Info, config: &Config) {
-        fitness_population(&mut self.population, info, config, &mut self.fitness_hashmap);
+        fitness_population(&mut self.population, info, config);
 
         for _ in 0..config.n_generations {
             self.population.sort_by(|p1, p2| p2.fitness.total_cmp(&p1.fitness));
@@ -68,7 +68,7 @@ impl Island {
             } else if self.stagnation_counter > config.n_stagnations {
                 self.stagnation_counter = 0;
                 self.scramble_population(info, config);
-                fitness_population(&mut self.population, info, config, &mut self.fitness_hashmap);
+                fitness_population(&mut self.population, info, config);
                 self.best_fitness = get_best_fitness_population(&self.population);
             } else {
                 self.stagnation_counter += 1;
@@ -80,7 +80,7 @@ impl Island {
 
             mutate_population(&mut children_population, config, info);
 
-            fitness_population(&mut children_population, info, config, &mut self.fitness_hashmap);
+            fitness_population(&mut children_population, info, config);
 
             survivor_selection(&mut self.population, &parent_indices, &children_population, config);
 

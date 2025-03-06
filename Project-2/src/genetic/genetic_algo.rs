@@ -1,4 +1,5 @@
 use cpu_time::ProcessTime;
+
 use crate::genetic::evaluate::{fitness_population, get_best_fitness_population, get_best_solution_population};
 use crate::genetic::initialize_population::init_population;
 use crate::genetic::mutation::mutate_population;
@@ -21,13 +22,11 @@ pub(crate) fn start(conf_path: &str) {
 
     let mut stagnation_counter: i32 = 0;
     let mut best_fitness: f32 = f32::INFINITY;
-    let mut best_solution: Vec<Vec<i32>> = Vec::new();
 
     let start = ProcessTime::now();
 
     for i in 0..config.n_generations {
         population.sort_by(|p1, p2| p2.fitness.total_cmp(&p1.fitness));
-
 
         if i % 100 == 0 {
             let fitnesses: Vec<f32> = population.iter().map(|x| x.fitness).collect::<Vec<f32>>();
@@ -41,9 +40,9 @@ pub(crate) fn start(conf_path: &str) {
         if best_fitness > curr_fitness {
             stagnation_counter = 0;
             best_fitness = curr_fitness;
-            if curr_fitness < 860. {
-                best_solution = get_best_solution_population(&population);
-                save_individual(&population);
+            // Only save good solutions
+            if curr_fitness < info.benchmark * 1.05 {
+                save_individual(&population, &config);
             }
         } else if stagnation_counter > (config.n_stagnations) {
             stagnation_counter = 0;

@@ -41,15 +41,12 @@ pub(crate) fn feasible_init_individual(info: &Info, _config: &Config) -> Individ
             let route_idx =  if !nurses[nurse_idx].route.is_empty() {rng.random_range(0..nurses[nurse_idx].route.len())} else { 0 };
             nurses[nurse_idx].route.insert(route_idx, *patient_idx as i32);
 
-            if is_feasible_fitness_nurse(&nurses[nurse_idx], &info) {
+            n += 1;
+            if is_feasible_fitness_nurse(&nurses[nurse_idx], &info) || n > 580 {
                 break 'outer;
             }
             nurses[nurse_idx].route.remove(route_idx);
 
-            n += 1;
-            if n > 8050 {
-                panic!("Bruh: {:?}, \ninfo: {:?}", &nurses, _patient);
-            }
         }
     }
     Individual{nurses, fitness: -9999.}
