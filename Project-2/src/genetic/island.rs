@@ -1,19 +1,31 @@
+#[cfg(test)]
 use std::collections::HashMap;
+#[cfg(test)]
 use std::sync::{Arc, Mutex};
+#[cfg(test)]
 use std::thread;
-use std::time::Instant;
-use crate::genetic::evaluate::{fitness_population, get_best_fitness_population, is_feasible_fitness_individual, get_best_solution_population};
+#[cfg(test)]
+use crate::genetic::evaluate::{fitness_population, get_best_fitness_population, get_best_solution_population};
+#[cfg(test)]
 use crate::genetic::initialize_population::init_population;
+#[cfg(test)]
 use crate::genetic::mutation::mutate_population;
+#[cfg(test)]
 use crate::genetic::parent_selection::parent_selection;
+#[cfg(test)]
 use crate::genetic::crossover::population_crossover;
+#[cfg(test)]
 use crate::genetic::survivor_selection::survivor_selection;
+#[cfg(test)]
 use crate::structs::io;
+#[cfg(test)]
 use crate::structs::config::Config;
+#[cfg(test)]
 use crate::structs::io::Info;
+#[cfg(test)]
 use crate::structs::nurse::{Individual, Nurse};
-use crate::util::save_individual::save_individual;
 
+#[cfg(test)]
 struct Island {
     population: Vec<Individual>,
     fitness_hashmap: HashMap<Vec<Nurse>, f32>,
@@ -22,6 +34,7 @@ struct Island {
     stagnation_counter: i32,
 }
 
+#[cfg(test)]
 impl Island {
     fn new(info: &Info, config: &Config) -> Self {
         let population = init_population(info, config);
@@ -82,6 +95,7 @@ impl Island {
     }
 }
 
+#[cfg(test)]
 pub(crate) fn start(conf_path: &str) {
     let config = Arc::new(Config::new(conf_path));
     let info = Arc::new(io::read_from_json(&config).unwrap());

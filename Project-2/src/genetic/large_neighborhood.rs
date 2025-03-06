@@ -1,10 +1,9 @@
-use rand::{rng, Rng};
+use rand::Rng;
 use rand::rngs::ThreadRng;
-use rayon::iter::IntoParallelRefIterator;
 use crate::genetic::evaluate::fitness_nurse;
 use crate::structs::config::Config;
 use crate::structs::io::Info;
-use crate::structs::nurse::{Individual, Nurse};
+use crate::structs::nurse::Nurse;
 
 pub fn destroy_and_repair(individual: &mut Vec<Nurse>, rng: &mut ThreadRng, info: &Info, config: &Config) {
     // Should nurse with more than 6 patients

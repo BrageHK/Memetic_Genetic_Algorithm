@@ -11,7 +11,8 @@ type RankingFN = fn(&Vec<Individual>, &Config) -> Vec<usize>;
 /// Do parent selection based on config and get parent indices
 pub fn parent_selection(population: &mut Vec<Individual>, config: &Config) -> Vec<usize> {
     let parent_fn: RankingFN = match config.parent_selection_fn {
-        ParentSelectionFN::LinearRanking => linear_ranking
+        ParentSelectionFN::LinearRanking => linear_ranking,
+        ParentSelectionFN::Probabilistic => probabilistic_ranking,
     };
 
     let mut parent_indices = parent_fn(population, &config);
@@ -62,7 +63,7 @@ pub fn probabilistic_ranking(population: &Vec<Individual>, config: &Config) -> V
         .map(|individual| individual.fitness/sum)
         .collect::<Vec<f32>>();
 
-    let mut dist = WeightedIndex::new(&probabilities).unwrap();
+    let dist = WeightedIndex::new(&probabilities).unwrap();
 
     let mut indices = Vec::new();
     for _ in 0..n_parents {

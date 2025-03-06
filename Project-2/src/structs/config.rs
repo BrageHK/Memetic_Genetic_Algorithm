@@ -1,8 +1,6 @@
 use serde::{Deserialize, Serialize};
 use serde_yaml;
 use std::fs;
-use std::fs::File;
-use std::io::Read;
 
 #[derive(Deserialize, Serialize, Debug)]
 pub enum InitialPopType {
@@ -13,6 +11,7 @@ pub enum InitialPopType {
 #[derive(Debug, Deserialize)]
 pub enum ParentSelectionFN {
     LinearRanking,
+    Probabilistic,
 }
 
 #[derive(Deserialize, Serialize, Debug)]

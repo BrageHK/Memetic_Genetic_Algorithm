@@ -21,7 +21,7 @@ pub fn population_crossover(
     };
 
     // Could make this shorter, but don't care.
-    let mut children: Vec<Individual>;
+    let children: Vec<Individual>;
     if config.use_islands {
         children = parent_indices
             .chunks_exact(2)
@@ -69,7 +69,7 @@ fn visma_crossover(
     }
     let mut parent_idx_1: usize = 0;
     let mut found = false;
-    for i in 0..5 {
+    for _ in 0..5 {
         parent_idx_1 = rng.random_range(0..parent1.nurses.len());
         if !parent1.nurses[parent_idx_1].route.is_empty() {
             found = true;
@@ -80,7 +80,7 @@ fn visma_crossover(
 
     let mut parent_idx_2: usize = 0;
     let mut found = false;
-    for i in 0..5 {
+    for _ in 0..5 {
         parent_idx_2 = rng.random_range(0..parent2.nurses.len());
         if !parent2.nurses[parent_idx_2].route.is_empty() {
             found = true;
@@ -144,7 +144,7 @@ fn remove_crossover(individual_to_change: &mut Individual, other_individual: &In
     let patients_to_remove = &other_individual.nurses[i].route;
     let mut insertion_nurses = Vec::new();
 
-    for (nurse_idx, mut nurse) in &mut individual_to_change.nurses.iter_mut().enumerate() {
+    for (nurse_idx, nurse) in &mut individual_to_change.nurses.iter_mut().enumerate() {
         let mut indices_to_remove: Vec<usize> = Vec::new();
 
         for (patient_idx, patient_pos) in nurse.route.iter().enumerate() {
