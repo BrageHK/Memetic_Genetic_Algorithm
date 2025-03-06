@@ -31,7 +31,8 @@ pub(crate) fn start(conf_path: &str) {
         if i % 100 == 0 {
             let fitnesses: Vec<f32> = population.iter().map(|x| x.fitness).collect::<Vec<f32>>();
             let last_fitnesses = &fitnesses[fitnesses.len()-5..];
-            println!("nGenerations: {} Best fitnesses: {:?} Execution_time {:?}", i, last_fitnesses, &start.elapsed());
+            let avg_fitness = fitnesses.iter().sum::<f32>() / fitnesses.len() as f32;
+            println!("nGenerations: {} Best fitnesses: {:?} Avg Fitness: {} Execution_time {:?}", i, last_fitnesses, &avg_fitness, &start.elapsed());
         }
         /* if i % 10 == 0 { print!("Fitnesses: ["); for individual in population.iter() { print!("({}, {}),", individual.fitness , is_feasible_fitness_individual(&individual, &info)); } println!("]"); println!("Population len: {}", population.len()) } */
 

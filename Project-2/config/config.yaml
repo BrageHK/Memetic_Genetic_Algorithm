@@ -1,8 +1,8 @@
 # File
-file_name: test_1
+file_name: train_9
 
 # Hyperparameters
-population_size: 180
+population_size: 150
 n_generations: 10000000
 n_elitism: 1
 n_stagnations: 1450
@@ -22,11 +22,11 @@ large_neighbourhood_mutation_rate: 0.2
 n_parents_scaling: 3.0
 
 # Linear Ranking (between 1-2)
-s: 1.9
+s: 1.7
 
 # Crowding
 # 0 for deterministic, 1 for probabilistic
-scaling_factor: 1.1
+scaling_factor: 0.5
 
 # Functions
 #Feasible, File
