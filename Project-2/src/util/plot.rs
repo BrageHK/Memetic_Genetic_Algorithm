@@ -6,10 +6,9 @@ use serde_json::from_str;
 use plotters::prelude::*;
 use plotters::coord::types::RangedCoordf64;
 use plotters::style::RGBColor;
-use crate::genetic::evaluate::duration_demand_nurse;
 use crate::structs::config::Config;
 use crate::structs::io::{read_from_json, Info};
-use crate::structs::nurse::Individual;
+use crate::util::print::print_best_solution;
 
 fn draw_arrow(
     chart: &mut ChartContext<BitMapBackend,
@@ -131,19 +130,10 @@ pub fn plot_best_individual() {
     }
 
     plot_points(&parsed_vec, &info);
+    print_best_solution(parsed_vec, &info);
     println!("Made a plot for: {}", &*config.file_name)
 }
-fn _generate_colors(n: usize) -> Vec<RGBColor> {
-    let golden_ratio_conjugate = 0.61803398875; // Helps spread colors better
-    let mut hue = 0.0;
 
-    (0..n)
-        .map(|_| {
-            hue = (hue + golden_ratio_conjugate * 360.0) % 360.0; // Avoid clustering
-            hsl_to_rgb(hue, 0.85, 0.55) // Higher saturation & balanced brightness
-        })
-        .collect()
-}
 fn generate_colors() -> Vec<RGBColor> {
     vec![
         RGBColor { 0: 255, 1: 0, 2: 0 },       // Red
@@ -172,30 +162,4 @@ fn generate_colors() -> Vec<RGBColor> {
         RGBColor { 0: 255, 1: 140, 2: 0 },     // Dark Oran1e
         RGBColor { 0: 75, 1: 0, 2: 130 },      // Indi1o
     ]
-}
-
-fn hsl_to_rgb(h: f64, s: f64, l: f64) -> RGBColor {
-    let c = (1.0 - (2.0 * l - 1.0).abs()) * s;
-    let x = c * (1.0 - ((h / 60.0) % 2.0 - 1.0).abs());
-    let m = l - c / 2.0;
-    let (r, g, b) = match h as u32 {
-        0..=59 => (c, x, 0.0),
-        60..=119 => (x, c, 0.0),
-        120..=179 => (0.0, c, x),
-        180..=239 => (0.0, x, c),
-        240..=299 => (x, 0.0, c),
-        _ => (c, 0.0, x),
-    };
-    RGBColor(
-        ((r + m) * 255.0) as u8,
-        ((g + m) * 255.0) as u8,
-        ((b + m) * 255.0) as u8,
-    )
-}
-
-pub fn print_best_solution(individual: &Individual, info: &Info) {
-    for nurse in individual.nurses.iter() {
-        print!("");
-        let (capacity, duration) = duration_demand_nurse(&nurse, &info);
-    }
 }

@@ -1,21 +1,78 @@
 use rand::{rng, Rng};
+use rand::prelude::SliceRandom;
 use crate::structs::config::{Config, SurvivorSelectionFN};
 use crate::structs::nurse::Individual;
 
 pub fn survivor_selection(
     population: &mut Vec<Individual>,
     parent_indices: &Vec<usize>,
-    children: &Vec<Individual>,
+    children: &mut Vec<Individual>,
     config: &Config
 ) {
     match config.survivor_selection_fn {
         SurvivorSelectionFN::Crowding => crowding(population, &children, &config),
-        SurvivorSelectionFN::CrowdingOptimized => crowding_optimized(population, &children, &config, &parent_indices)
+        SurvivorSelectionFN::CrowdingOptimized => crowding_optimized(population, &children, &config, &parent_indices),
+        SurvivorSelectionFN::Tournament => tournament(population, children, &config)
     };
+}
 
+fn tournament(population: &mut Vec<Individual>, children: &mut Vec<Individual>, config: &Config) {
+    population.append(children);
+    let mut rng = rand::rng();
+    let tournament_size: usize = config.tournament_size.min(population.len() as i32) as usize;
+    let mut next_generation = Vec::with_capacity(population.len());
+
+    // Create next generation through tournaments
+    while next_generation.len() < config.population_size as usize {
+        // Select random individuals for tournament
+        let mut competitors: Vec<usize> = (0..population.len()).collect();
+        competitors.shuffle(&mut rng);
+        let competitors: &[usize] = &competitors[0..tournament_size];
+
+        // Find the best individual in tournament
+        let winner = competitors.iter()
+            .min_by(|&&a, &&b| population[a].fitness.partial_cmp(&population[b].fitness).unwrap())
+            .unwrap();
+
+        next_generation.push(population[*winner].clone());
+    }
+
+    // Replace population with new generation
+    *population = next_generation;
 }
 
 // With the right compile flags, this is faster than Hashmap version
+pub fn _similarity(
+    individual1: &Individual,
+    individual2: &Individual,
+    pop_size: usize
+) -> f32 {
+    let mut similarity = 0;
+    for nurse1 in &individual1.nurses {
+        if nurse1.route.len() < 2 {
+            continue;
+        }
+        // Check edges
+        for i in 0..nurse1.route.len()-1 {
+            let edge1 = (nurse1.route[i], nurse1.route[i+1]);
+            // Check if other individual contains these edges
+            for nurse2 in &individual2.nurses {
+                if nurse2.route.len() < 2 {
+                    continue;
+                }
+                for j in 0..nurse2.route.len()-1 {
+                    let edge2 = (nurse2.route[j], nurse2.route[j+1]);
+                    if edge1 == edge2 {
+                        similarity += 1;
+                    }
+                }
+            }
+        }
+    }
+
+    similarity as f32 / pop_size as f32
+}
+
 pub fn similarity(
     individual1: &Individual,
     individual2: &Individual,

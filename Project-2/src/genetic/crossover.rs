@@ -17,7 +17,9 @@ pub fn population_crossover(
     config: &Config,
 ) -> Vec<Individual> {
     let crossover_fn: CrossoverFNType = match config.crossover_fn {
-        CrossoverFN::Visma =>  visma_crossover
+        CrossoverFN::Visma =>  visma_crossover,
+        CrossoverFN::VismaOptimized => visma_crossover_optimized,
+        CrossoverFN::VismaIndexed => visma_crossover_indexed,
     };
 
     // Could make this shorter, but don't care.
@@ -96,6 +98,131 @@ fn visma_crossover(
     repair_nurse(&mut child2, &parent1, parent_idx_1, repair_nurse_idx_2, &info, &config);
 
     (child1, child2)
+}
+
+
+fn visma_crossover_optimized(
+    parent1: &Individual,
+    parent2: &Individual,
+    info: &Info,
+    config: &Config
+) -> (Individual, Individual) {
+    let mut child1: Individual = parent1.clone();
+    let mut child2: Individual = parent2.clone();
+    let mut rng: ThreadRng = rand::rng();
+    if rng.random_range(0.0..=1.) > config.crossover_rate {
+        return (parent1.clone(), parent2.clone())
+    }
+    let mut parent_idx_1: usize = 0;
+    let mut found = false;
+    for _ in 0..5 {
+        parent_idx_1 = rng.random_range(0..parent1.nurses.len());
+        if !parent1.nurses[parent_idx_1].route.is_empty() {
+            found = true;
+            break;
+        }
+    }
+    if !found { return (parent1.clone(), parent2.clone()); }
+
+    let mut parent_idx_2: usize = 0;
+    let mut found = false;
+    for _ in 0..5 {
+        parent_idx_2 = rng.random_range(0..parent2.nurses.len());
+        if !parent2.nurses[parent_idx_2].route.is_empty() {
+            found = true;
+            break;
+        }
+    }
+    if !found { return (parent1.clone(), parent2.clone()); }
+
+    let repair_nurse_idx_1: usize = remove_crossover(&mut child1, &parent2, parent_idx_2);
+    let repair_nurse_idx_2: usize = remove_crossover(&mut child2, &parent1, parent_idx_1);
+
+    repair_nurse(&mut child1, &parent2, parent_idx_2, repair_nurse_idx_1, &info, &config);
+    repair_nurse(&mut child2, &parent1, parent_idx_1, repair_nurse_idx_2, &info, &config);
+
+    (child1, child2)
+}
+
+fn visma_crossover_indexed(
+    parent1: &Individual,
+    parent2: &Individual,
+    info: &Info,
+    config: &Config
+) -> (Individual, Individual) {
+    let mut child1: Individual = parent1.clone();
+    let mut child2: Individual = parent2.clone();
+    let mut rng: ThreadRng = rand::rng();
+    if rng.random_range(0.0..=1.) > config.crossover_rate {
+        return (parent1.clone(), parent2.clone())
+    }
+    let mut parent_idx_1: usize = 0;
+    let mut found = false;
+    for _ in 0..5 {
+        parent_idx_1 = rng.random_range(0..parent1.nurses.len());
+        if !parent1.nurses[parent_idx_1].route.is_empty() {
+            found = true;
+            break;
+        }
+    }
+    if !found { return (parent1.clone(), parent2.clone()); }
+
+    let mut parent_idx_2: usize = 0;
+    let mut found = false;
+    for _ in 0..5 {
+        parent_idx_2 = rng.random_range(0..parent2.nurses.len());
+        if !parent2.nurses[parent_idx_2].route.is_empty() {
+            found = true;
+            break;
+        }
+    }
+    if !found { return (parent1.clone(), parent2.clone()); }
+
+    let repair_nurse_idx_1: usize = remove_crossover(&mut child1, &parent2, parent_idx_2);
+    let repair_nurse_idx_2: usize = remove_crossover(&mut child2, &parent1, parent_idx_1);
+
+    repair_nurse_indexed(&mut child1, &parent2, parent_idx_2, repair_nurse_idx_1, &info, &config);
+    repair_nurse_indexed(&mut child2, &parent1, parent_idx_1, repair_nurse_idx_2, &info, &config);
+
+    (child1, child2)
+}
+
+fn repair_nurse_indexed(
+    individual_to_repair: &mut Individual,
+    parent: &Individual,
+    parent_idx: usize,
+    nurse_to_repair_idx: usize,
+    info: &Info,
+    config: &Config,
+) {
+    let mut patients: Vec<usize> = Vec::new();
+    for patient_idx in parent.nurses[parent_idx].route.iter() {
+        patients.push(*patient_idx as usize);
+    }
+
+
+    // All patients
+    for patient_idx in patients {
+        let mut lowest_fitness_change = f32::INFINITY;
+        let mut best_insertion_idx = 0;
+        let old_fitness = fitness_nurse(&individual_to_repair.nurses[nurse_to_repair_idx], &info, &config);
+
+        // Check all patient insertion points to find the best
+        for insertion_idx in 0..individual_to_repair.nurses[nurse_to_repair_idx].route.len() {
+            individual_to_repair.nurses[nurse_to_repair_idx].route.insert(insertion_idx, patient_idx as i32);
+            let new_fitness = fitness_nurse(&individual_to_repair.nurses[nurse_to_repair_idx], &info, &config);
+            if new_fitness - old_fitness < lowest_fitness_change {
+                lowest_fitness_change = new_fitness - old_fitness;
+                best_insertion_idx = insertion_idx;
+            }
+            individual_to_repair.nurses[nurse_to_repair_idx].route.remove(insertion_idx);
+        }
+        // Insert the patient into the best nurse at the best position
+        individual_to_repair.nurses[nurse_to_repair_idx]
+            .route
+            .insert(best_insertion_idx, patient_idx as i32);
+    }
+
 }
 
 fn repair_nurse(

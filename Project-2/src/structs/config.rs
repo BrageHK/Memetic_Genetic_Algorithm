@@ -17,12 +17,15 @@ pub enum ParentSelectionFN {
 #[derive(Deserialize, Serialize, Debug)]
 pub enum CrossoverFN {
     Visma,
+    VismaOptimized,
+    VismaIndexed,
 }
 
 #[derive(Deserialize, Serialize, Debug)]
 pub enum SurvivorSelectionFN {
     Crowding,
     CrowdingOptimized,
+    Tournament,
 }
 
 #[derive(Deserialize, Serialize, Debug)]
@@ -34,6 +37,7 @@ pub enum ScrambleFN {
 #[derive(Debug, Deserialize)]
 pub struct Config  {
     pub use_islands: bool,
+    pub print_and_graph: bool,
 
     pub file_name: String,
     pub population_size: i32,
@@ -43,9 +47,9 @@ pub struct Config  {
     pub crossover_rate: f32,
 
     pub heuristic_cluster_mutation_rate: f32,
-    pub random_swap_mutation_rate: f32,
     pub heuristic_swap_mutation_rate: f32,
     pub heuristic_random_swap_mutation_rate: f32,
+    pub insert_mutation_rate: f32,
     pub large_neighbourhood_mutation_rate: f32,
 
     pub init_population_fn: InitialPopType,
@@ -58,6 +62,8 @@ pub struct Config  {
     pub n_parents_scaling: f32,
     pub fitness_punishment_factor: f32,
     pub s: f32,
+
+    pub tournament_size: i32,
 }
 
 impl Config {

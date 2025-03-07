@@ -2,8 +2,6 @@ use crate::structs::config::Config;
 use crate::structs::io::{Info, Patient};
 use crate::structs::nurse::{Individual, Nurse};
 
-use ordered_float::OrderedFloat;
-
 pub fn fitness_population(
     population: &mut Vec<Individual>,
     info: &Info,
@@ -82,16 +80,15 @@ pub fn duration_demand_nurse(nurse: &Nurse, info: &Info) -> (u32, f32) {
     // All patients
     let mut prev_p_idx = 0;
     for p in &nurse.route {
-        let patient = info.patients[*p as usize];
-        let p = p+1;
-        let travel_time = info.travel_times[prev_p_idx][p as usize];
+        let patient = info.patients[(*p as usize) - 1];
+        let travel_time = info.travel_times[prev_p_idx][*p as usize];
         time_used += travel_time;
         if patient.start_time as f32 > time_used {
             time_used = patient.start_time as f32;
         }
         time_used += patient.care_time as f32;
         curr_demand += patient.demand;
-        prev_p_idx = p as usize;
+        prev_p_idx = *p as usize;
     }
 
     // From last patient to depot
@@ -100,6 +97,7 @@ pub fn duration_demand_nurse(nurse: &Nurse, info: &Info) -> (u32, f32) {
     (curr_demand, time_used)
 }
 
+#[cfg(test)]
 pub fn is_feasible_fitness_individual(individual: &Individual, info: &Info) -> bool {
     for nurse in &individual.nurses {
         if !is_feasible_fitness_nurse(nurse, &info) {
@@ -159,6 +157,7 @@ pub fn get_best_fitness_population(population: &Vec<Individual>) -> f32 {
     best_individual.unwrap().fitness
 }
 
+#[cfg(test)]
 pub fn get_best_solution_population(population: &Vec<Individual>) -> Vec<Vec<i32>> {
     let best_individual = population
         .iter()
@@ -172,4 +171,29 @@ pub fn get_best_solution_population(population: &Vec<Individual>) -> Vec<Vec<i32
         individual.push(incremented_route);
     }
     individual
+}
+
+pub fn fitness_print_nurse(nurse: &Vec<i32>, info: &Info) {
+    if nurse.is_empty() {
+        return
+    }
+
+    let mut time_used: f32 = 0.0;
+    let mut patient: Patient;
+
+    // All patients
+    let mut prev_p_idx = 0;
+    for p in nurse {
+        patient = info.patients[(*p as usize) - 1];
+        let travel_time = info.travel_times[prev_p_idx][*p as usize];
+        time_used += travel_time;
+        if patient.start_time as f32 > time_used {
+            time_used = patient.start_time as f32;
+        }
+        let time_used_before_patient = time_used;
+        time_used += patient.care_time as f32;
+        print!(" -> {}({:.2}-{:.2})", p, time_used_before_patient, time_used);
+        print!("[{}-{}]", patient.start_time, patient.end_time);
+        prev_p_idx = *p as usize;
+    }
 }

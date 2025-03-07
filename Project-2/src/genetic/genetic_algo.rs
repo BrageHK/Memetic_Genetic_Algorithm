@@ -58,16 +58,13 @@ pub(crate) fn start(conf_path: &str) {
 
         let parent_indices: Vec<usize> = parent_selection(&mut population, &config);
 
-        let start = ProcessTime::now();
         let mut children_population = population_crossover(&mut population, &parent_indices, &info, &config);
-        let cpu_time = start.elapsed();
-        //println!("Crossover time {:?}", cpu_time);
 
         mutate_population(&mut children_population, &config, &info);
 
         fitness_population(&mut children_population, &info, &config);
 
-        survivor_selection(&mut population, &parent_indices, &children_population, &config);
+        survivor_selection(&mut population, &parent_indices, &mut children_population, &config);
 
         population.append(&mut elitism_members);
     }

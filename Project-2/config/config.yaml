@@ -1,25 +1,29 @@
 # File
-file_name: test_1
+file_name: train_9
+
+# Initial printing and graph
+print_and_graph: true
 
 # Hyperparameters
 population_size: 200
-n_generations: 10000000
+n_generations: 300000000
 n_elitism: 1
-n_stagnations: 1450
-crossover_rate: 0.8
+n_stagnations: 5000
+crossover_rate: 0.6
 fitness_punishment_factor: 4.5
+tournament_size: 3
 
 use_islands: false
 
 # Mutation
-heuristic_cluster_mutation_rate: 0.3
-random_swap_mutation_rate: 0.000001
-heuristic_swap_mutation_rate: 0.2
-heuristic_random_swap_mutation_rate: 0.5
-large_neighbourhood_mutation_rate: 0.2
+heuristic_cluster_mutation_rate: 0.1
+heuristic_swap_mutation_rate: 0.1
+heuristic_random_swap_mutation_rate: 0.1
+insert_mutation_rate: 0.1
+large_neighbourhood_mutation_rate: 0.1
 
 # Parent Selection
-n_parents_scaling: 5.0
+n_parents_scaling: 3.0
 
 # Linear Ranking (between 1-2)
 s: 1.8
@@ -34,8 +38,10 @@ init_population_fn: Feasible
 
 parent_selection_fn: LinearRanking
 
-crossover_fn: Visma
+# Visma, VismaOptimized, VismaIndexed
+crossover_fn: VismaOptimized
 
+# CrowdingOptimized, Crowding, Tournament
 survivor_selection_fn: CrowdingOptimized
 
 # Keep, Delete
