@@ -16,7 +16,6 @@ pub fn save_individual(population: &Vec<Individual>, config: &Config) {
         let incremented_route = nurse.route.iter().map(|&num| num + 1).collect();
         individual.push(incremented_route);
     }
-    fs::create_dir_all("individuals/".to_string() + &*config.file_name + "/").unwrap();
     let mut file = File::create("individuals/".to_string() + &*config.file_name + "/" + &*best_individual.fitness.to_string()).unwrap();
     file.write_all(format!("{:?}",&individual).as_bytes()).unwrap();
 }

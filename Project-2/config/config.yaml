@@ -1,13 +1,13 @@
 # File
-file_name: train_9
+file_name: test_1
 
 # Hyperparameters
-population_size: 150
+population_size: 200
 n_generations: 10000000
 n_elitism: 1
 n_stagnations: 1450
 crossover_rate: 0.8
-fitness_punishment_factor: 5.0
+fitness_punishment_factor: 4.5
 
 use_islands: false
 
@@ -19,14 +19,14 @@ heuristic_random_swap_mutation_rate: 0.5
 large_neighbourhood_mutation_rate: 0.2
 
 # Parent Selection
-n_parents_scaling: 3.0
+n_parents_scaling: 5.0
 
 # Linear Ranking (between 1-2)
-s: 1.7
+s: 1.8
 
 # Crowding
 # 0 for deterministic, 1 for probabilistic
-scaling_factor: 0.5
+scaling_factor: 0.9
 
 # Functions
 #Feasible, File

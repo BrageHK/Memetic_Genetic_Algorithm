@@ -105,16 +105,22 @@ pub fn plot_points(individual: &Vec<Vec<i32>>, info: &Info) {
 
 pub fn plot_best_individual() {
     let info = read_from_json(&Config::new("config/config.yaml")).unwrap();
-    let folder_path = "./individuals_9"; // Change to your actual folder path
+    let config = Config::new("./config/config.yaml");
+    let folder_path = "./individuals/".to_string() + &*config.file_name + "/";
+    fs::create_dir_all(&folder_path).unwrap();
 
     // Find the file with the smallest numerical name
     let mut min_file: f32 = f32::INFINITY;
     let mut parsed_vec: Vec<Vec<i32>> = Vec::new();
+    if fs::read_dir(&folder_path).unwrap().next().is_none() {
+        return;
+    }
 
-    for entry in fs::read_dir(folder_path).unwrap() {
+    for entry in fs::read_dir(&folder_path).unwrap() {
         let entry = entry.unwrap();
         let filename = entry.file_name();
-        let file_num: f32 = filename.clone().into_string().unwrap().parse().unwrap();
+        let file_num= filename.to_str().unwrap();
+        let file_num: f32 = file_num.parse::<f32>().unwrap();
 
         if file_num <  min_file {
             min_file = file_num;
@@ -125,6 +131,7 @@ pub fn plot_best_individual() {
     }
 
     plot_points(&parsed_vec, &info);
+    println!("Made a plot for: {}", &*config.file_name)
 }
 fn _generate_colors(n: usize) -> Vec<RGBColor> {
     let golden_ratio_conjugate = 0.61803398875; // Helps spread colors better
