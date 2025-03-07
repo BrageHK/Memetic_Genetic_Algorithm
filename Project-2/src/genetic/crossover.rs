@@ -19,7 +19,7 @@ pub fn population_crossover(
     let crossover_fn: CrossoverFNType = match config.crossover_fn {
         CrossoverFN::Visma =>  visma_crossover,
         CrossoverFN::VismaOptimized => visma_crossover_optimized,
-        CrossoverFN::VismaIndexed => visma_crossover_indexed,
+        CrossoverFN::VismaIndexed => visma_crossover_heuristic,
     };
 
     // Could make this shorter, but don't care.
@@ -144,7 +144,7 @@ fn visma_crossover_optimized(
     (child1, child2)
 }
 
-fn visma_crossover_indexed(
+fn visma_crossover_heuristic(
     parent1: &Individual,
     parent2: &Individual,
     info: &Info,
@@ -181,17 +181,17 @@ fn visma_crossover_indexed(
     let repair_nurse_idx_1: usize = remove_crossover(&mut child1, &parent2, parent_idx_2);
     let repair_nurse_idx_2: usize = remove_crossover(&mut child2, &parent1, parent_idx_1);
 
-    repair_nurse_indexed(&mut child1, &parent2, parent_idx_2, repair_nurse_idx_1, &info, &config);
-    repair_nurse_indexed(&mut child2, &parent1, parent_idx_1, repair_nurse_idx_2, &info, &config);
+    //repair_nurse_heuristic(&mut child1, &parent2, parent_idx_2, &info, &config);
+    //repair_nurse_heuristic(&mut child2, &parent1, parent_idx_1, &info, &config);
 
     (child1, child2)
 }
 
-fn repair_nurse_indexed(
+/*
+fn repair_nurse_heuristic(
     individual_to_repair: &mut Individual,
     parent: &Individual,
     parent_idx: usize,
-    nurse_to_repair_idx: usize,
     info: &Info,
     config: &Config,
 ) {
@@ -224,6 +224,8 @@ fn repair_nurse_indexed(
     }
 
 }
+
+ */
 
 fn repair_nurse(
     to_repair: &mut Individual,

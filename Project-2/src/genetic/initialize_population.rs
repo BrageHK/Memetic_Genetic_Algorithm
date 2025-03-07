@@ -77,6 +77,7 @@ fn get_population_from_file(info: &Info, config: &Config) -> Vec<Individual> {
         }
         new_pop.push(Individual{nurses, fitness: 0.})
     }
+    println!("Now pop len {}", new_pop.len());
 
     if new_pop.len() < config.population_size as usize {
         for _ in 0..config.population_size as usize - new_pop.len() {
@@ -84,7 +85,7 @@ fn get_population_from_file(info: &Info, config: &Config) -> Vec<Individual> {
             new_pop.push(new_member);
         }
     } else if new_pop.len() > config.population_size as usize {
-        for _ in 0..config.population_size as usize - new_pop.len() {
+        for _ in 0..new_pop.len()-config.population_size as usize {
             new_pop.remove(rng().random_range(0..new_pop.len()));
         }
     }

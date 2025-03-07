@@ -8,19 +8,19 @@ print_and_graph: true
 population_size: 200
 n_generations: 300000000
 n_elitism: 1
-n_stagnations: 5000
-crossover_rate: 0.6
+n_stagnations: 9000
+crossover_rate: 0.3
 fitness_punishment_factor: 4.5
 tournament_size: 3
 
-use_islands: false
+use_islands: true
 
 # Mutation
 heuristic_cluster_mutation_rate: 0.1
-heuristic_swap_mutation_rate: 0.1
-heuristic_random_swap_mutation_rate: 0.1
-insert_mutation_rate: 0.1
-large_neighbourhood_mutation_rate: 0.1
+heuristic_swap_mutation_rate: 0.2
+heuristic_random_swap_mutation_rate: 0.2
+insert_mutation_rate: 0.2
+large_neighbourhood_mutation_rate: 0.03
 
 # Parent Selection
 n_parents_scaling: 3.0

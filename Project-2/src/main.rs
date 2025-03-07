@@ -16,5 +16,5 @@ fn main() {
         plot_best_individual();
         println!("Finished plotting");
     }
-    genetic_algo::start("config/config.yaml");
+    genetic_algo::init(config);
 }

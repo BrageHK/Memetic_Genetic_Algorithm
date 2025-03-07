@@ -6,14 +6,22 @@ use crate::genetic::mutation::mutate_population;
 use crate::genetic::parent_selection::parent_selection;
 use crate::genetic::crossover::population_crossover;
 use crate::genetic::elitism::get_elitism_members;
+use crate::genetic::island::start_islands;
 use crate::genetic::scramble::scramble_population;
 use crate::genetic::survivor_selection::survivor_selection;
 use crate::structs::io;
 use crate::structs::config::Config;
 use crate::util::save_individual::save_individual;
 
-pub(crate) fn start(conf_path: &str) {
-    let config = Config::new(conf_path);
+pub(crate) fn init(config: Config) {
+    if config.use_islands {
+        start_islands(config);
+    } else {
+        start(config)
+    }
+}
+
+pub(crate) fn start(config: Config) {
     let info = io::read_from_json(&config).unwrap();
 
     let mut population = init_population(&info, &config);
