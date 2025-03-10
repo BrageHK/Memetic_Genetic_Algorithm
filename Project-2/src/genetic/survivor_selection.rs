@@ -10,36 +10,11 @@ pub fn survivor_selection(
     config: &Config
 ) {
     match config.survivor_selection_fn {
-        SurvivorSelectionFN::Crowding => crowding(population, &children, &config),
-        SurvivorSelectionFN::CrowdingOptimized => crowding_optimized(population, &children, &config, &parent_indices),
-        SurvivorSelectionFN::Tournament => tournament(population, children, &config)
+        SurvivorSelectionFN::CrowdingOld => crowding(population, &children, &config),
+        SurvivorSelectionFN::Crowding => crowding_optimized(population, &children, &config, &parent_indices),
     };
 }
 
-fn tournament(population: &mut Vec<Individual>, children: &mut Vec<Individual>, config: &Config) {
-    population.append(children);
-    let mut rng = rand::rng();
-    let tournament_size: usize = config.tournament_size.min(population.len() as i32) as usize;
-    let mut next_generation = Vec::with_capacity(population.len());
-
-    // Create next generation through tournaments
-    while next_generation.len() < config.population_size as usize {
-        // Select random individuals for tournament
-        let mut competitors: Vec<usize> = (0..population.len()).collect();
-        competitors.shuffle(&mut rng);
-        let competitors: &[usize] = &competitors[0..tournament_size];
-
-        // Find the best individual in tournament
-        let winner = competitors.iter()
-            .min_by(|&&a, &&b| population[a].fitness.partial_cmp(&population[b].fitness).unwrap())
-            .unwrap();
-
-        next_generation.push(population[*winner].clone());
-    }
-
-    // Replace population with new generation
-    *population = next_generation;
-}
 
 // With the right compile flags, this is faster than Hashmap version
 pub fn _similarity(

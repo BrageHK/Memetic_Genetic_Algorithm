@@ -1,4 +1,4 @@
-use cpu_time::ProcessTime;
+use std::time::Instant;
 
 use crate::genetic::evaluate::{fitness_population, get_best_fitness_population};
 use crate::genetic::initialize_population::init_population;
@@ -31,7 +31,7 @@ pub(crate) fn start(config: Config) {
     let mut stagnation_counter: i32 = 0;
     let mut best_fitness: f32 = f32::INFINITY;
 
-    let start = ProcessTime::now();
+    let start = Instant::now();
 
     for i in 0..config.n_generations {
         population.sort_by(|p1, p2| p2.fitness.total_cmp(&p1.fitness));
@@ -75,5 +75,11 @@ pub(crate) fn start(config: Config) {
         survivor_selection(&mut population, &parent_indices, &mut children_population, &config);
 
         population.append(&mut elitism_members);
+
+        if config.run_time != -1 {
+            if start.elapsed().as_secs() > config.run_time as u64 {
+                break;
+            }
+        }
     }
 }

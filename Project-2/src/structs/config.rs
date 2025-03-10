@@ -2,42 +2,44 @@ use serde::{Deserialize, Serialize};
 use serde_yaml;
 use std::fs;
 
-#[derive(Deserialize, Serialize, Debug)]
+#[derive(Deserialize, Serialize, Debug, Clone)]
 pub enum InitialPopType {
     Feasible,
     File,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, Clone)]
 pub enum ParentSelectionFN {
     LinearRanking,
     Probabilistic,
+    Tournament,
 }
 
-#[derive(Deserialize, Serialize, Debug)]
+#[derive(Deserialize, Serialize, Debug, Clone)]
 pub enum CrossoverFN {
     Visma,
     VismaOptimized,
     VismaIndexed,
 }
 
-#[derive(Deserialize, Serialize, Debug)]
+#[derive(Deserialize, Serialize, Debug, Clone)]
 pub enum SurvivorSelectionFN {
+    CrowdingOld,
     Crowding,
-    CrowdingOptimized,
-    Tournament,
 }
 
-#[derive(Deserialize, Serialize, Debug)]
+#[derive(Deserialize, Serialize, Debug, Clone)]
 pub enum ScrambleFN {
     Delete,
     Keep,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, Clone)]
 pub struct Config  {
     pub use_islands: bool,
+    pub island_share_frequency: i32,
     pub print_and_graph: bool,
+    pub run_time: i32,
 
     pub file_name: String,
     pub population_size: i32,

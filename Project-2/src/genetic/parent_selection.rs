@@ -1,10 +1,11 @@
-use crate::structs::config::{Config, ParentSelectionFN};
+use crate::structs::config::{Config, ParentSelectionFN, SurvivorSelectionFN};
 use crate::structs::nurse::Individual;
 
 use rand::rng;
 use rand::rngs::ThreadRng;
 use rand::distr::Distribution;
 use rand::distr::weighted::WeightedIndex;
+use rand::prelude::SliceRandom;
 
 type RankingFN = fn(&Vec<Individual>, &Config) -> Vec<usize>;
 
@@ -13,6 +14,7 @@ pub fn parent_selection(population: &mut Vec<Individual>, config: &Config) -> Ve
     let parent_fn: RankingFN = match config.parent_selection_fn {
         ParentSelectionFN::LinearRanking => linear_ranking,
         ParentSelectionFN::Probabilistic => probabilistic_ranking,
+        ParentSelectionFN::Tournament => tournament
     };
 
     let mut parent_indices = parent_fn(population, &config);
@@ -71,4 +73,26 @@ pub fn probabilistic_ranking(population: &Vec<Individual>, config: &Config) -> V
     }
 
     indices
+}
+
+fn tournament(population: &Vec<Individual>, config: &Config) -> Vec<usize> {
+    let mut rng: ThreadRng = rand::thread_rng();
+    let tournament_size = config.tournament_size.min(population.len() as i32) as usize;
+    let n_parents = ((population.len() - config.n_elitism as usize) as f32 * config.n_parents_scaling) as usize;
+
+    let mut parent_indices = Vec::with_capacity(n_parents);
+
+    for _ in 0..n_parents {
+        let mut competitors: Vec<usize> = (0..population.len()).collect();
+        competitors.shuffle(&mut rng);
+        let competitors = &competitors[0..tournament_size];
+
+        let winner = competitors.iter()
+            .min_by(|&&a, &&b| population[a].fitness.partial_cmp(&population[b].fitness).unwrap())
+            .unwrap();
+
+        parent_indices.push(*winner);
+    }
+
+    parent_indices
 }

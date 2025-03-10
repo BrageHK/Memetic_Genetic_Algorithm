@@ -1,48 +1,56 @@
 # File
-file_name: train_9
+file_name: test_2
 
 # Initial printing and graph
 print_and_graph: true
 
 # Hyperparameters
-population_size: 200
+population_size: 150
 n_generations: 300000000
 n_elitism: 1
-n_stagnations: 9000
-crossover_rate: 0.3
-fitness_punishment_factor: 4.5
+n_stagnations: 700
+crossover_rate: 0.5
+fitness_punishment_factor: 900000000.0
 tournament_size: 3
 
+# Max run time in seconds. -1 for no constraint
+run_time: 300
+
+# ---------- islands ----------
 use_islands: true
+island_share_frequency: 600
 
 # Mutation
-heuristic_cluster_mutation_rate: 0.1
+heuristic_cluster_mutation_rate: 0.2
 heuristic_swap_mutation_rate: 0.2
-heuristic_random_swap_mutation_rate: 0.2
-insert_mutation_rate: 0.2
-large_neighbourhood_mutation_rate: 0.03
+heuristic_random_swap_mutation_rate: 0.001 # Bad to have high
+insert_mutation_rate: 0.001 # Bad to have high
+large_neighbourhood_mutation_rate: 0.001 # Bad to have high
 
 # Parent Selection
 n_parents_scaling: 3.0
 
-# Linear Ranking (between 1-2)
-s: 1.8
+# Linear Ranking (between 1-2). Higher means more probability of choosing the best individual
+s: 1.7
 
 # Crowding
 # 0 for deterministic, 1 for probabilistic
 scaling_factor: 0.9
 
-# Functions
-#Feasible, File
+
+# ------- Functions -------
+# Feasible, File
 init_population_fn: Feasible
 
+# LinearRanking, Tournament, Probabilistic
 parent_selection_fn: LinearRanking
 
-# Visma, VismaOptimized, VismaIndexed
-crossover_fn: VismaOptimized
+# Visma, VismaIndexed
+# Don't use Visma Indexed. It is bad. See report
+crossover_fn: Visma
 
-# CrowdingOptimized, Crowding, Tournament
-survivor_selection_fn: CrowdingOptimized
+# Crowding
+survivor_selection_fn: Crowding
 
 # Keep, Delete
 scramble_fn: Delete
