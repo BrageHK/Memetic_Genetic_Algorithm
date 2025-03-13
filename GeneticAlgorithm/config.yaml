@@ -1,6 +1,0 @@
-population_size: 100
-n_generations: 10
-crossover_rate: 0.2
-mutation_rate: 0.8
-knapsack_capacity: 280785
-overweight_penalty_factor: 1
