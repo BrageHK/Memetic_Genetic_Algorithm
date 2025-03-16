@@ -30,6 +30,7 @@ pub(crate) fn start(config: Config) {
 
     let mut stagnation_counter: i32 = 0;
     let mut best_fitness: f32 = f32::INFINITY;
+    let mut global_best_fitness: f32 = f32::INFINITY;
 
     let start = Instant::now();
 
@@ -51,7 +52,8 @@ pub(crate) fn start(config: Config) {
             best_fitness = curr_fitness;
             // Only save good solutions
             // TODO: Keep only best
-            if curr_fitness < info.benchmark * 1.05 {
+            if curr_fitness < global_best_fitness {
+                global_best_fitness = curr_fitness;
                 save_individual(&population, &config);
             }
         } else if stagnation_counter > (config.n_stagnations) {

@@ -1,6 +1,7 @@
 use std::fs::File;
 use std::io::Write;
 use ordered_float::OrderedFloat;
+
 use crate::structs::config::Config;
 use crate::structs::nurse::Individual;
 

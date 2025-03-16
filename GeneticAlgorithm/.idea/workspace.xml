@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="ALL" />
+  </component>
+  <component name="CargoProjects">
+    <cargoProject FILE="$PROJECT_DIR$/Cargo.toml" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="59b282db-1158-46b3-afc9-242812b82c88" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/../Project-2/config/config.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/../Project-2/config/config.yaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Project-2/individuals/train_9/859.3904" beforeDir="false" afterPath="$PROJECT_DIR$/../Project-2/individuals/train_9/859.3904" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Project-2/individuals/train_9/860.10693" beforeDir="false" afterPath="$PROJECT_DIR$/../Project-2/individuals/train_9/860.10693" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Project-2/individuals/train_9/861.0887" beforeDir="false" afterPath="$PROJECT_DIR$/../Project-2/individuals/train_9/861.0887" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Project-2/individuals/train_9/861.117" beforeDir="false" afterPath="$PROJECT_DIR$/../Project-2/individuals/train_9/861.117" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Project-2/individuals/train_9/861.11707" beforeDir="false" afterPath="$PROJECT_DIR$/../Project-2/individuals/train_9/861.11707" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Project-2/individuals/train_9/861.197" beforeDir="false" afterPath="$PROJECT_DIR$/../Project-2/individuals/train_9/861.197" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Project-2/individuals/train_9/862.64606" beforeDir="false" afterPath="$PROJECT_DIR$/../Project-2/individuals/train_9/862.64606" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Project-2/individuals/train_9/863.0613" beforeDir="false" afterPath="$PROJECT_DIR$/../Project-2/individuals/train_9/863.0613" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Project-2/plots/train_9.png" beforeDir="false" afterPath="$PROJECT_DIR$/../Project-2/plots/train_9.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Project-2/src/genetic/crossover.rs" beforeDir="false" afterPath="$PROJECT_DIR$/../Project-2/src/genetic/crossover.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Project-2/src/genetic/genetic_algo.rs" beforeDir="false" afterPath="$PROJECT_DIR$/../Project-2/src/genetic/genetic_algo.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Project-2/src/structs/config.rs" beforeDir="false" afterPath="$PROJECT_DIR$/../Project-2/src/structs/config.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Project-2/src/structs/io.rs" beforeDir="false" afterPath="$PROJECT_DIR$/../Project-2/src/structs/io.rs" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="ExecutionTargetManager" SELECTED_TARGET="RsBuildProfile:bench" />
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/.." />
+  </component>
+  <component name="MacroExpansionManager">
+    <option name="directoryName" value="nqs8txdd" />
+  </component>
+  <component name="ProjectColorInfo">{
+  &quot;associatedIndex&quot;: 7
+}</component>
+  <component name="ProjectId" id="2rw94hv7TJadZgj0D8ZMkoNH8g2" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "Cargo.Run IT-3708.executor": "Run",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.rust.reset.selective.auto.import": "true",
+    "git-widget-placeholder": "main",
+    "last_opened_file_path": "/home/brage/Documents/ntnufag/Bio-AI/Project-2",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm",
+    "org.rust.cargo.project.model.PROJECT_DISCOVERY": "true",
+    "org.rust.cargo.project.model.impl.CargoExternalSystemProjectAware.subscribe.first.balloon": "",
+    "vue.rearranger.settings.migration": "true"
+  }
+}]]></component>
+  <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/src" />
+    </key>
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$" />
+      <recent name="$PROJECT_DIR$/data" />
+    </key>
+  </component>
+  <component name="RunManager">
+    <configuration name="Run IT-3708" type="CargoCommandRunConfiguration" factoryName="Cargo Command" temporary="true">
+      <option name="buildProfileId" value="bench" />
+      <option name="command" value="run --package IT-3708 --bin IT-3708" />
+      <option name="workingDirectory" value="file://$PROJECT_DIR$" />
+      <envs />
+      <option name="emulateTerminal" value="true" />
+      <option name="channel" value="DEFAULT" />
+      <option name="requiredFeatures" value="true" />
+      <option name="allFeatures" value="false" />
+      <option name="withSudo" value="false" />
+      <option name="buildTarget" value="REMOTE" />
+      <option name="backtrace" value="SHORT" />
+      <option name="isRedirectInput" value="false" />
+      <option name="redirectInputPath" value="" />
+      <method v="2">
+        <option name="CARGO.BUILD_TASK_PROVIDER" enabled="true" />
+      </method>
+    </configuration>
+    <recent_temporary>
+      <list>
+        <item itemvalue="Cargo.Run IT-3708" />
+      </list>
+    </recent_temporary>
+  </component>
+  <component name="RustProjectSettings">
+    <option name="toolchainHomeDirectory" value="$USER_HOME$/.cargo/bin" />
+  </component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="59b282db-1158-46b3-afc9-242812b82c88" name="Changes" comment="" />
+      <created>1737459080831</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1737459080831</updated>
+      <workItem from="1737459081842" duration="27000" />
+      <workItem from="1737459112150" duration="18118000" />
+      <workItem from="1737489367187" duration="943000" />
+      <workItem from="1739534330558" duration="3017000" />
+      <workItem from="1739704135044" duration="5677000" />
+      <workItem from="1739718691087" duration="4133000" />
+      <workItem from="1739810734808" duration="19000" />
+      <workItem from="1739879295470" duration="273000" />
+      <workItem from="1739879578246" duration="1000" />
+      <workItem from="1742125109715" duration="18000" />
+    </task>
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+</project>
