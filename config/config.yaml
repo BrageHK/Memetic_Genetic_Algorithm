@@ -3,14 +3,15 @@ file_name: test_2
 
 # Initial printing and graph
 print_and_graph: true
+log_frequency: 100
 
 # Hyperparameters
 population_size: 150
 n_generations: 300000000
 n_elitism: 1
-n_stagnations: 700
+n_stagnations: 500
 crossover_rate: 0.5
-fitness_punishment_factor: 900000000.0
+fitness_punishment_factor: 4.5
 tournament_size: 3
 
 # Max run time in seconds. -1 for no constraint
@@ -31,7 +32,7 @@ large_neighbourhood_mutation_rate: 0.001 # Bad to have high
 n_parents_scaling: 3.0
 
 # Linear Ranking (between 1-2). Higher means more probability of choosing the best individual
-s: 1.7
+s: 1.8
 
 # Crowding
 # 0 for deterministic, 1 for probabilistic
@@ -45,9 +46,10 @@ init_population_fn: Feasible
 # LinearRanking, Tournament, Probabilistic
 parent_selection_fn: LinearRanking
 
-# Visma, VismaIndexed
+# Visma, VismaIndexed, VismaMoreOptimized
 # Don't use Visma Indexed. It is bad. See report
 crossover_fn: Visma
+crossover_tries: 3
 
 # Crowding
 survivor_selection_fn: Crowding

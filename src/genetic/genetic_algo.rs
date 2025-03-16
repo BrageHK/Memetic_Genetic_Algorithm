@@ -36,7 +36,7 @@ pub(crate) fn start(config: Config) {
     for i in 0..config.n_generations {
         population.sort_by(|p1, p2| p2.fitness.total_cmp(&p1.fitness));
 
-        if i % 100 == 0 {
+        if i % config.log_frequency == 0 {
             let fitnesses: Vec<f32> = population.iter().map(|x| x.fitness).collect::<Vec<f32>>();
             let last_fitnesses = &fitnesses[fitnesses.len()-5..];
             let avg_fitness = fitnesses.iter().sum::<f32>() / fitnesses.len() as f32;
@@ -50,6 +50,7 @@ pub(crate) fn start(config: Config) {
             stagnation_counter = 0;
             best_fitness = curr_fitness;
             // Only save good solutions
+            // TODO: Keep only best
             if curr_fitness < info.benchmark * 1.05 {
                 save_individual(&population, &config);
             }

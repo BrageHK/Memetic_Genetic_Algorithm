@@ -20,6 +20,7 @@ pub enum CrossoverFN {
     Visma,
     VismaOptimized,
     VismaIndexed,
+    VismaMoreOptimized,
 }
 
 #[derive(Deserialize, Serialize, Debug, Clone)]
@@ -40,6 +41,7 @@ pub struct Config  {
     pub island_share_frequency: i32,
     pub print_and_graph: bool,
     pub run_time: i32,
+    pub log_frequency: i32,
 
     pub file_name: String,
     pub population_size: i32,
@@ -47,6 +49,7 @@ pub struct Config  {
     pub n_elitism: i32,
     pub n_stagnations: i32,
     pub crossover_rate: f32,
+    pub crossover_tries: i8,
 
     pub heuristic_cluster_mutation_rate: f32,
     pub heuristic_swap_mutation_rate: f32,

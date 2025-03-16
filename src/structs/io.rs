@@ -17,9 +17,49 @@ pub struct Info {
     pub benchmark: f32,
     pub depot: Depot,
     pub travel_times: Vec<Vec<f32>>,
+    pub travel_times_sorted: Vec<Vec<usize>>,
 
     #[serde(deserialize_with = "patients_to_vec")]
     pub patients: Vec<Patient>
+}
+#[derive(Deserialize, Serialize, Debug)]
+pub struct InfoRaw {
+    pub instance_name: String,
+    pub nbr_nurses: u32,
+    pub capacity_nurse: u32,
+    pub benchmark: f32,
+    pub depot: Depot,
+    pub travel_times: Vec<Vec<f32>>,
+
+    #[serde(deserialize_with = "patients_to_vec")]
+    pub patients: Vec<Patient>
+}
+
+impl From<InfoRaw> for Info {
+    fn from(raw: InfoRaw) -> Self {
+        let mut travel_times_sorted: Vec<Vec<usize>> = Vec::new();
+
+        for patient_num in 0..raw.travel_times.len() {
+            let cloone = raw.travel_times[patient_num].clone();
+            let mut travel_times_indexed: Vec<(usize, &f32)> = cloone.iter().enumerate().collect();
+            travel_times_indexed.sort_by(|a, b| a.1.partial_cmp(b.1).unwrap_or(std::cmp::Ordering::Equal));
+            let mut sorted_times: Vec<usize> = travel_times_indexed.into_iter().map(|(index, _)| index).collect();
+            sorted_times.remove(0);
+            travel_times_sorted.push(sorted_times);
+        }
+
+
+        Info {
+            instance_name: raw.instance_name,
+            nbr_nurses: raw.nbr_nurses,
+            capacity_nurse: raw.capacity_nurse,
+            benchmark: raw.benchmark,
+            depot: raw.depot,
+            travel_times: raw.travel_times,
+            travel_times_sorted, // Populate the sorted travel times
+            patients: raw.patients,
+        }
+    }
 }
 
 #[derive(Deserialize, Serialize, Debug)]
@@ -73,9 +113,10 @@ where
     Ok(patients_vec.into_iter().map(|(_, patient)| patient).collect())
 }
 
-pub fn read_from_json(config: &Config) -> Result<Info, Box<dyn Error>>{
+pub fn read_from_json(config: &Config) -> Result<Info, Box<dyn Error>> {
     let f = File::open("train/".to_string() + &*config.file_name + ".json")?;
     let reader = BufReader::new(f);
-    let info = from_reader(reader)?;
+    let info_raw: InfoRaw = from_reader(reader)?;
+    let info = Info::from(info_raw);
     Ok(info)
 }
