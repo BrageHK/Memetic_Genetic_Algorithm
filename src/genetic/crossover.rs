@@ -263,12 +263,12 @@ fn repair_nurse_optimized(
             }
 
             if found {
-                let fitness_before = fitness_nurse(&to_repair.nurses[nurse_idx], &info, &config);
+                let fitness_before = fitness_nurse(&to_repair.nurses[nurse_idx], &info, &config).0;
                 n_patients_tried += 1;
 
                 // Try inserting before the current patient
                 to_repair.nurses[nurse_idx].route.insert(patient_idx, *patient_to_insert_num);
-                let fitness_after = fitness_nurse(&to_repair.nurses[nurse_idx], &info, &config);
+                let fitness_after = fitness_nurse(&to_repair.nurses[nurse_idx], &info, &config).0;
                 if fitness_after - fitness_before < lowest_fitness_change {
                     lowest_fitness_change = fitness_after - fitness_before;
                     best_insertion_idx_nurse = nurse_idx;
@@ -279,7 +279,7 @@ fn repair_nurse_optimized(
                 // Try inserting after the current patient
                 if patient_idx + 1 <= to_repair.nurses[nurse_idx].route.len() {
                     to_repair.nurses[nurse_idx].route.insert(patient_idx + 1, *patient_to_insert_num);
-                    let fitness_after = fitness_nurse(&to_repair.nurses[nurse_idx], &info, &config);
+                    let fitness_after = fitness_nurse(&to_repair.nurses[nurse_idx], &info, &config).0;
                     if fitness_after - fitness_before < lowest_fitness_change {
                         lowest_fitness_change = fitness_after - fitness_before;
                         best_insertion_idx_nurse = nurse_idx;
@@ -326,9 +326,9 @@ fn repair_nurse(
         // Check all nurses for the best insertion point
         for (n_idx, nurse) in to_repair.nurses.iter_mut().enumerate() {
             for insertion_idx in 0..=nurse.route.len() {
-                let old_fitness = fitness_nurse(nurse, &info, &config);
+                let old_fitness = fitness_nurse(nurse, &info, &config).0;
                 nurse.route.insert(insertion_idx, patient.0 as i32);
-                let new_fitness = fitness_nurse(nurse, &info, &config);
+                let new_fitness = fitness_nurse(nurse, &info, &config).0;
                 if new_fitness - old_fitness < lowest_fitness_change {
                     lowest_fitness_change = new_fitness - old_fitness;
                     best_nurse_idx = n_idx;

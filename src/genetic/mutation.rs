@@ -69,10 +69,10 @@ pub fn heuristic_cluster_mutation(nurses: &mut Vec<Nurse>, rng: &mut ThreadRng, 
     let cluster: Vec<i32> = nurses[nurse_idx].route.drain(start_idx..end_idx).collect();
 
     for (nurse_idx, nurse) in nurses.iter_mut().enumerate() {
-        let before_fitness = fitness_nurse(&nurse, &info, &config);
+        let before_fitness = fitness_nurse(&nurse, &info, &config).0;
         for route_idx in 0..nurse.route.len() {
             nurse.route.splice(route_idx..route_idx, cluster.clone().into_iter());
-            let after_fitness = fitness_nurse(&nurse, &info, &config);
+            let after_fitness = fitness_nurse(&nurse, &info, &config).0;
             nurse.route.drain(route_idx..route_idx+cluster.len());
             if after_fitness - before_fitness < lowest_fitness {
                 lowest_fitness = after_fitness - before_fitness;
@@ -99,13 +99,13 @@ fn heuristic_swap_mutation(nurses: &mut Vec<Nurse>, rng: &mut ThreadRng, info: &
     let mut best_pos1 = 0;
     let mut best_pos2 = 0;
 
-    let before_fitness = fitness_nurse(&nurses[nurse_idx], &info, &config);
+    let before_fitness = fitness_nurse(&nurses[nurse_idx], &info, &config).0;
 
     for i in 0..nurses[nurse_idx].route.len() {
         for j in 0..nurses[nurse_idx].route.len() {
             if i != j {
                 nurses[nurse_idx].route.swap(i,j);
-                let after_fitness = fitness_nurse(&nurses[nurse_idx], &info, &config);
+                let after_fitness = fitness_nurse(&nurses[nurse_idx], &info, &config).0;
                 nurses[nurse_idx].route.swap(j,i);
 
                 if after_fitness - before_fitness < lowest_fitness {
@@ -178,8 +178,8 @@ fn heurisitc_random_cross_swap_mutation2(nurses: &mut Vec<Nurse>, rng: &mut Thre
         nurses[nurse_i].route[patient_i] = patient_2;
         nurses[nurse_j].route[patient_j] = patient_1;
 
-        let fitness = fitness_nurse(&nurses[nurse_i], &info, &config)
-            + fitness_nurse(&nurses[nurse_j], &info, &config);
+        let fitness = fitness_nurse(&nurses[nurse_i], &info, &config).0
+            + fitness_nurse(&nurses[nurse_j], &info, &config).0;
 
         if fitnesses.is_empty() {
             fitnesses.push(SwapFitness{i: patient_i, j: patient_j, fitness})
@@ -262,12 +262,12 @@ fn heuristic_insert_mutation(nurses: &mut Vec<Nurse>, rng: &mut ThreadRng, info:
     let mut best_fitness: f32 = f32::MAX;
 
     for (nurse_idx, patient_idx) in zip(&nurse_indices, &patient_indices) {
-        let fitness_before = fitness_nurse(&nurses[*nurse_idx], &info, &config);
+        let fitness_before = fitness_nurse(&nurses[*nurse_idx], &info, &config).0;
 
         nurses[nurse_to_change_idx].route.remove(patient_to_change_idx);
         nurses[*nurse_idx].route.insert(*patient_idx, patient_to_change);
 
-        let fitness_after = fitness_nurse(&nurses[*nurse_idx], &info, &config);
+        let fitness_after = fitness_nurse(&nurses[*nurse_idx], &info, &config).0;
 
         nurses[*nurse_idx].route.remove(*patient_idx);
         nurses[nurse_to_change_idx].route.insert(patient_to_change_idx, patient_to_change);

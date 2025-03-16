@@ -51,7 +51,7 @@ pub(crate) fn start(config: Config) {
             stagnation_counter = 0;
             best_fitness = curr_fitness;
             // Only save good solutions
-            // TODO: Keep only best
+            // TODO: Keep only best legal solution
             if curr_fitness < global_best_fitness {
                 global_best_fitness = curr_fitness;
                 save_individual(&population, &config);

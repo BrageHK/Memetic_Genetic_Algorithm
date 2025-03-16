@@ -19,15 +19,16 @@ fn fitness_no_hashmap(
         .iter_mut()
         .for_each(|individual| {
             let score: f32 = individual.nurses.iter()
-                .map(|nurse| fitness_nurse(nurse, info, config))
+                .map(|nurse| fitness_nurse(nurse, info, config).0)
                 .sum();
             individual.fitness = score;
         });
 }
 
-pub fn fitness_nurse(nurse: &Nurse, info: &Info, config: &Config) -> f32 {
+pub fn fitness_nurse(nurse: &Nurse, info: &Info, config: &Config) -> (f32, bool) {
+    let mut is_legal = true;
     if nurse.route.is_empty() {
-        return 0.0
+        return (0.0, is_legal)
     }
 
     let mut fitness: f32 = 0.0;
@@ -50,12 +51,14 @@ pub fn fitness_nurse(nurse: &Nurse, info: &Info, config: &Config) -> f32 {
         if (patient.end_time as f32) < time_used {
             // Pasienten har ikke tid til å bli behandlet -> punishment
             fitness += travel_time * config.fitness_punishment_factor;
+            is_legal = false;
         }
         curr_demand += patient.demand;
         prev_p_idx = p as usize;
     }
     if curr_demand > info.capacity_nurse {
         fitness += 1000.;
+        is_legal = false;
     }
 
     // From last patient to depot
@@ -63,10 +66,11 @@ pub fn fitness_nurse(nurse: &Nurse, info: &Info, config: &Config) -> f32 {
     time_used += info.travel_times[0][prev_p_idx];
 
     if time_used > info.depot.return_time as f32 {
-        fitness += 3000.;
+        fitness += 1000.;
+        is_legal = false;
     }
 
-    fitness
+    (fitness, is_legal)
 }
 
 pub fn duration_demand_nurse(nurse: &Nurse, info: &Info) -> (u32, f32) {
@@ -95,16 +99,6 @@ pub fn duration_demand_nurse(nurse: &Nurse, info: &Info) -> (u32, f32) {
     time_used += info.travel_times[0][prev_p_idx];
 
     (curr_demand, time_used)
-}
-
-#[cfg(test)]
-pub fn is_feasible_fitness_individual(individual: &Individual, info: &Info) -> bool {
-    for nurse in &individual.nurses {
-        if !is_feasible_fitness_nurse(nurse, &info) {
-            return false;
-        }
-    }
-    true
 }
 
 pub fn is_feasible_fitness_nurse(nurse: &Nurse, info: &Info) -> bool {

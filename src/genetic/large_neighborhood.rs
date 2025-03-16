@@ -33,7 +33,7 @@ pub fn destroy_and_repair(individual: &mut Vec<Nurse>, rng: &mut ThreadRng, info
     for nurse_i in 0..individual.len() {
         for patient_pos in 0..individual[nurse_i].route.len() {
             individual[nurse_i].route.splice(patient_pos..patient_pos, patients_to_move.clone().into_iter());
-            let after_fitness_nurse = fitness_nurse(&individual[nurse_i], &info, &config);
+            let after_fitness_nurse = fitness_nurse(&individual[nurse_i], &info, &config).0;
             individual[nurse_i].route.drain(patient_pos..patient_pos+patients_to_move.len());
             if after_fitness_nurse < lowest_fitness {
                 lowest_fitness = after_fitness_nurse;
