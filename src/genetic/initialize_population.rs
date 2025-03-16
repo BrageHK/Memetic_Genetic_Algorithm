@@ -49,7 +49,7 @@ pub(crate) fn feasible_init_individual(info: &Info, _config: &Config) -> Individ
 
         }
     }
-    Individual{nurses, fitness: -9999.}
+    Individual{nurses, fitness: -9999., feasible: false}
 }
 
 fn get_population_from_file(info: &Info, config: &Config) -> Vec<Individual> {
@@ -75,7 +75,7 @@ fn get_population_from_file(info: &Info, config: &Config) -> Vec<Individual> {
                 *i -= 1;
             }
         }
-        new_pop.push(Individual{nurses, fitness: 0.})
+        new_pop.push(Individual{nurses, fitness: 0., feasible: false})
     }
     println!("Now pop len {}", new_pop.len());
 

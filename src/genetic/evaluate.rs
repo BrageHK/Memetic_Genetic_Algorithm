@@ -18,10 +18,18 @@ fn fitness_no_hashmap(
     population
         .iter_mut()
         .for_each(|individual| {
+            let mut feasible = true;
             let score: f32 = individual.nurses.iter()
-                .map(|nurse| fitness_nurse(nurse, info, config).0)
+                .map(|nurse| {
+                    let fit = fitness_nurse(nurse, info, config);
+                    if !fit.1 {
+                        feasible = false;
+                    }
+                    fit.0
+                })
                 .sum();
             individual.fitness = score;
+            individual.feasible = feasible;
         });
 }
 

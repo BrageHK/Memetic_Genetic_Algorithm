@@ -16,7 +16,8 @@ impl Nurse {
 #[derive(Deserialize, Serialize, Debug, Clone)]
 pub struct Individual {
     pub nurses: Vec<Nurse>,
-    pub fitness: f32
+    pub fitness: f32,
+    pub feasible: bool
 }
 
 impl Hash for Individual {

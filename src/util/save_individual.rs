@@ -7,8 +7,10 @@ use crate::structs::nurse::Individual;
 
 pub fn save_individual(population: &Vec<Individual>, config: &Config) {
     let mut individual: Vec<Vec<i32>> = Vec::new();
+
     let best_individual = population
         .iter()
+        .filter(|i| i.feasible)
         .min_by_key(|i| OrderedFloat(i.fitness))
         .unwrap()
         .clone();
