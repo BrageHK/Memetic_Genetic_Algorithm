@@ -9,7 +9,7 @@ pub fn scramble_population(population: &mut Vec<Individual>, info: &Info, config
     println!("Scramble population:");
     let scramble: ScrambleFNType = match config.scramble_fn {
         ScrambleFN::Delete => delete,
-        ScrambleFN::Keep => keep,
+        ScrambleFN::Keep => delete,
     };
     scramble(population, &info, &config);
 }

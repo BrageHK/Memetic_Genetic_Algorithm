@@ -1,6 +1,8 @@
 # File
 file_name: train_9
 
+port: 8080
+
 # Initial printing and graph
 print_and_graph: true
 log_frequency: 100
@@ -15,7 +17,7 @@ fitness_punishment_factor: 4.5
 tournament_size: 3
 
 # Max run time in seconds. -1 for no constraint
-run_time: 300
+run_time: 180
 
 # ---------- islands ----------
 use_islands: true

@@ -69,6 +69,7 @@ pub struct Config  {
     pub s: f32,
 
     pub tournament_size: i32,
+    pub port: u16
 }
 
 impl Config {
