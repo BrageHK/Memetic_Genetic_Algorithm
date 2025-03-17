@@ -18,13 +18,19 @@ use crate::structs::config::Config;
 use crate::structs::io;
 use crate::structs::nurse::Individual;
 use crate::util::save_individual::save_individual;
+use crate::util::server::run_server;
 
 pub(crate) fn start_islands(config: Config) {
-    let num_islands: usize = available_parallelism().unwrap().get();
+    let num_islands: usize = available_parallelism().unwrap().get()-1;
     let shared_individuals = Arc::new(Mutex::new(Vec::new()));
-    let mut rng= rand::rng();
 
     println!("Creating {} islands!", num_islands);
+
+    tokio::spawn(run_server(config.port));
+    let peers = vec![
+        ("192.168.1.2".to_string(), 8081), // Other PCs' IPs and ports
+        ("192.168.1.3".to_string(), 8082),
+    ];
 
     let mut handles = vec![];
 
@@ -54,6 +60,7 @@ pub(crate) fn islands(config: Config, shared_individuals: Arc<Mutex<Vec<Individu
 
     let mut stagnation_counter: i32 = 0;
     let mut best_fitness: f32 = f32::INFINITY;
+    let mut global_best_fitness: f32 = f32::INFINITY;
 
     let start = Instant::now();
 
@@ -94,7 +101,7 @@ pub(crate) fn islands(config: Config, shared_individuals: Arc<Mutex<Vec<Individu
         }
         population.sort_by(|p1, p2| p2.fitness.total_cmp(&p1.fitness));
 
-        if i % 100 == 0 {
+        if i % config.log_frequency == 0 {
             let fitnesses: Vec<f32> = population.iter().map(|x| x.fitness).collect::<Vec<f32>>();
             let last_fitnesses = &fitnesses[fitnesses.len()-5..];
             let avg_fitness = fitnesses.iter().sum::<f32>() / fitnesses.len() as f32;
@@ -108,7 +115,8 @@ pub(crate) fn islands(config: Config, shared_individuals: Arc<Mutex<Vec<Individu
             stagnation_counter = 0;
             best_fitness = curr_fitness;
             // Only save good solutions
-            if curr_fitness < info.benchmark * 1.05 {
+            if curr_fitness < global_best_fitness {
+                global_best_fitness = curr_fitness;
                 save_individual(&population, &config);
             }
         } else if stagnation_counter > (config.n_stagnations) {
@@ -134,5 +142,10 @@ pub(crate) fn islands(config: Config, shared_individuals: Arc<Mutex<Vec<Individu
 
         population.append(&mut elitism_members);
 
+        if config.run_time != -1 {
+            if start.elapsed().as_secs() > config.run_time as u64 {
+                break;
+            }
+        }
     }
 }
