@@ -6,6 +6,7 @@ use serde_json::from_str;
 use plotters::prelude::*;
 use plotters::coord::types::RangedCoordf64;
 use plotters::style::RGBColor;
+
 use crate::structs::config::Config;
 use crate::structs::io::{read_from_json, Info};
 use crate::util::print::print_best_solution;

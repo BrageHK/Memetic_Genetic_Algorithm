@@ -18,7 +18,6 @@ use crate::structs::config::Config;
 use crate::structs::io;
 use crate::structs::nurse::Individual;
 use crate::util::save_individual::save_individual;
-use crate::util::server::run_server;
 
 pub(crate) fn start_islands(config: Config) {
     let num_islands: usize = available_parallelism().unwrap().get()-1;
@@ -26,7 +25,6 @@ pub(crate) fn start_islands(config: Config) {
 
     println!("Creating {} islands!", num_islands);
 
-    tokio::spawn(run_server(config.port));
     let peers = vec![
         ("192.168.1.2".to_string(), 8081), // Other PCs' IPs and ports
         ("192.168.1.3".to_string(), 8082),
@@ -107,7 +105,6 @@ pub(crate) fn islands(config: Config, shared_individuals: Arc<Mutex<Vec<Individu
             let avg_fitness = fitnesses.iter().sum::<f32>() / fitnesses.len() as f32;
             println!("nGenerations: {} Best fitnesses: {:?} Avg Fitness: {} Execution_time {:?}", i, last_fitnesses, &avg_fitness, &start.elapsed());
         }
-        /* if i % 10 == 0 { print!("Fitnesses: ["); for individual in population.iter() { print!("({}, {}),", individual.fitness , is_feasible_fitness_individual(&individual, &info)); } println!("]"); println!("Population len: {}", population.len()) } */
 
         // Stagnation
         let curr_fitness = population.last().unwrap().fitness;

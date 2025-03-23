@@ -43,7 +43,6 @@ pub(crate) fn start(config: Config) {
             let avg_fitness = fitnesses.iter().sum::<f32>() / fitnesses.len() as f32;
             println!("nGenerations: {} Best fitnesses: {:?} Avg Fitness: {} Execution_time {:?}", i, last_fitnesses, &avg_fitness, &start.elapsed());
         }
-        /* if i % 10 == 0 { print!("Fitnesses: ["); for individual in population.iter() { print!("({}, {}),", individual.fitness , is_feasible_fitness_individual(&individual, &info)); } println!("]"); println!("Population len: {}", population.len()) } */
 
         // Stagnation
         let curr_fitness = population.last().unwrap().fitness;
@@ -51,7 +50,6 @@ pub(crate) fn start(config: Config) {
             stagnation_counter = 0;
             best_fitness = curr_fitness;
             // Only save good solutions
-            // TODO: Keep only best legal solution
             if curr_fitness < global_best_fitness {
                 global_best_fitness = curr_fitness;
                 save_individual(&population, &config);
