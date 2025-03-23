@@ -25,11 +25,6 @@ pub(crate) fn start_islands(config: Config) {
 
     println!("Creating {} islands!", num_islands);
 
-    let peers = vec![
-        ("192.168.1.2".to_string(), 8081), // Other PCs' IPs and ports
-        ("192.168.1.3".to_string(), 8082),
-    ];
-
     let mut handles = vec![];
 
     for _ in 0..num_islands {
@@ -111,8 +106,8 @@ pub(crate) fn islands(config: Config, shared_individuals: Arc<Mutex<Vec<Individu
         if best_fitness > curr_fitness {
             stagnation_counter = 0;
             best_fitness = curr_fitness;
-            // Only save good solutions
-            if curr_fitness < global_best_fitness {
+            // Only save good solutions that are within the benchmark range
+            if curr_fitness < global_best_fitness && curr_fitness < info.benchmark * 1.05 {
                 global_best_fitness = curr_fitness;
                 save_individual(&population, &config);
             }

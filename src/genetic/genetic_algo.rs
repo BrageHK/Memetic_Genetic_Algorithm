@@ -49,8 +49,8 @@ pub(crate) fn start(config: Config) {
         if best_fitness > curr_fitness {
             stagnation_counter = 0;
             best_fitness = curr_fitness;
-            // Only save good solutions
-            if curr_fitness < global_best_fitness {
+            // Only save good solutions that are within the benchmark range
+            if curr_fitness < global_best_fitness && curr_fitness < info.benchmark * 1.05 {
                 global_best_fitness = curr_fitness;
                 save_individual(&population, &config);
             }

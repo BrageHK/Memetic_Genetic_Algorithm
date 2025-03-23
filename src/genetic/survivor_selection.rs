@@ -1,5 +1,4 @@
 use rand::{rng, Rng};
-use rand::prelude::SliceRandom;
 use crate::structs::config::{Config, SurvivorSelectionFN};
 use crate::structs::nurse::Individual;
 

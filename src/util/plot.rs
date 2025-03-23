@@ -33,14 +33,11 @@ fn draw_arrow(
 
     Ok(())
 }
-
 pub fn plot_points(individual: &Vec<Vec<i32>>, info: &Info) {
     let file_name = "plots/".to_owned() + &*info.instance_name.clone() + ".png";
-    let root = BitMapBackend::new(&file_name, (1000, 1000))
-            .into_drawing_area();
+    let root = BitMapBackend::new(&file_name, (1200, 1200)).into_drawing_area();
     root.fill(&WHITE).unwrap();
 
-    // Compute min/max X and Y values dynamically
     let mut min_x = f32::INFINITY;
     let mut max_x = f32::NEG_INFINITY;
     let mut min_y = f32::INFINITY;
@@ -56,53 +53,77 @@ pub fn plot_points(individual: &Vec<Vec<i32>>, info: &Info) {
         }
     }
 
-    // Add padding to the range to make it look better
-    let padding_x = (max_x - min_x) * 0.1;
-    let padding_y = (max_y - min_y) * 0.1;
+    let padding_x = (max_x - min_x) * 0.08;
+    let padding_y = (max_y - min_y) * 0.08;
 
     let mut chart = ChartBuilder::on(&root)
-        .caption(info.instance_name.to_string()+" Graph", ("sans-serif", 50))
-        .margin(30) // Increase margin for centering
+        .caption(
+            format!("{} - Nurse Routing Solution", info.instance_name),
+            ("sans-serif", 40).into_font(),
+        )
+        .margin(50)
+        .x_label_area_size(40)
+        .y_label_area_size(40)
         .build_cartesian_2d(
             (min_x - padding_x) as f64..(max_x + padding_x) as f64,
             (min_y - padding_y) as f64..(max_y + padding_y) as f64,
         )
         .unwrap();
-    chart.configure_mesh().draw().unwrap();
 
+    chart
+        .configure_mesh()
+        .x_desc("X pos")
+        .y_desc("Y pos")
+        .axis_desc_style(("sans-serif", 20))
+        .draw()
+        .unwrap();
+
+    // Plot patient points
     for nurse in individual {
-        for patient in nurse{
-            let p_info = info.patients[*patient as usize-1];
-            chart
-                .draw_series(
-                    std::iter::once(Circle::new((p_info.x_coord as f64, p_info.y_coord as f64), 3, &BLUE))
-                ).unwrap();
+        for patient in nurse {
+            let p_info = info.patients[*patient as usize - 1];
+            let _ = chart
+                .draw_series(std::iter::once(Circle::new(
+                    (p_info.x_coord as f64, p_info.y_coord as f64),
+                    5,
+                    &BLUE.mix(0.7),
+                )));
         }
     }
 
-
-
-    //let colors: Vec<RGBColor> = generate_colors(info.nbr_nurses as usize);
-    let colors: Vec<RGBColor> = generate_colors();
+    let colors = generate_colors();
 
     let depot_x = info.depot.x_coord;
     let depot_y = info.depot.y_coord;
+
+    // Plot routes with arrows and colors
     for (i, nurse) in individual.iter().enumerate() {
         if nurse.is_empty() {
             continue;
         }
         let mut prev_patient = (depot_x, depot_y);
         for patient in nurse {
-            let p_info = info.patients[*patient as usize-1];
-            draw_arrow(&mut chart, (prev_patient.0, prev_patient.1), (p_info.x_coord, p_info.y_coord), &colors[i]).unwrap();
+            let p_info = info.patients[*patient as usize - 1];
+            draw_arrow(
+                &mut chart,
+                (prev_patient.0, prev_patient.1),
+                (p_info.x_coord, p_info.y_coord),
+                &colors[i % colors.len()],
+            )
+                .unwrap();
             prev_patient = (p_info.x_coord, p_info.y_coord);
         }
-        draw_arrow(&mut chart, (prev_patient.0, prev_patient.1), (depot_x, depot_y), &colors[i]).unwrap();
+        draw_arrow(
+            &mut chart,
+            (prev_patient.0, prev_patient.1),
+            (depot_x, depot_y),
+            &colors[i % colors.len()],
+        )
+            .unwrap();
     }
 
     root.present().unwrap();
 }
-
 pub fn plot_best_individual() {
     let info = read_from_json(&Config::new("config/config.yaml")).unwrap();
     let config = Config::new("./config/config.yaml");

@@ -1,4 +1,4 @@
-use crate::structs::config::{Config, ParentSelectionFN, SurvivorSelectionFN};
+use crate::structs::config::{Config, ParentSelectionFN};
 use crate::structs::nurse::Individual;
 
 use rand::rng;
@@ -76,7 +76,7 @@ pub fn probabilistic_ranking(population: &Vec<Individual>, config: &Config) -> V
 }
 
 fn tournament(population: &Vec<Individual>, config: &Config) -> Vec<usize> {
-    let mut rng: ThreadRng = rand::thread_rng();
+    let mut rng: ThreadRng = rand::rng();
     let tournament_size = config.tournament_size.min(population.len() as i32) as usize;
     let n_parents = ((population.len() - config.n_elitism as usize) as f32 * config.n_parents_scaling) as usize;
 

@@ -1,6 +1,6 @@
 use crate::genetic::evaluate::{duration_demand_nurse, fitness_print_nurse};
 use crate::structs::io::Info;
-use crate::structs::nurse::{Individual, Nurse};
+use crate::structs::nurse::Nurse;
 
 pub fn print_best_solution(individual: Vec<Vec<i32>>, info: &Info) {
     println!("Nurse capacity: {}", info.capacity_nurse);
@@ -11,15 +11,5 @@ pub fn print_best_solution(individual: Vec<Vec<i32>>, info: &Info) {
         print!("Nurse {} \t{:.2}\t{}\tD(0)", nurse_idx, duration, capacity);
         fitness_print_nurse(&nurse, &info);
         print!(" -> D({:.2})\n", duration);
-    }
-}
-
-pub fn print_individual(individual: &Individual) {
-    for nurse in &individual.nurses {
-        print!("[");
-        for patient in &nurse.route {
-            print!(" {}", patient);
-        }
-        print!("]");
     }
 }
